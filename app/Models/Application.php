@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+#[Fillable(['user_id', 'property_id', 'message', 'move_in_date', 'status'])]
+class Application extends Model
+{
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function property(): BelongsTo
+    {
+        return $this->belongsTo(Property::class);
+    }
+}

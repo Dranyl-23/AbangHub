@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    .scrollbar-thin::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+        @apply bg-emerald-200 dark:bg-emerald-800 rounded-full;
+    }
+    .scrollbar-thin:hover::-webkit-scrollbar-thumb {
+        @apply bg-emerald-300 dark:bg-emerald-700;
+    }
+}
+
+/* Transitions */
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+.slide-up {
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Smooth Dark Mode Transition */
+html.dark *, html.dark *::before, html.dark *::after,
+html:not(.dark) *, html:not(.dark) *::before, html:not(.dark) *::after {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}

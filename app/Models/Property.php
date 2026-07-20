@@ -1,0 +1,96 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Builder;
+
+#[Fillable([
+    'title', 'property_type', 'bedrooms', 'bathrooms', 'floor_area', 
+    'monthly_rent', 'security_deposit', 'address', 'city', 'province', 
+    'barangay', 'description', 'status', 'furnishing_status', 
+    'parking_spaces', 'pet_policy', 'owner_id'
+])]
+class Property extends Model
+{
+    use HasFactory;
+
+    protected function casts(): array
+    {
+        return [
+            'monthly_rent' => 'decimal:2',
+            'security_deposit' => 'decimal:2',
+            'floor_area' => 'decimal:2',
+        ];
+    }
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function images(): HasMany
+    {
+        return $this->hasMany(PropertyImage::class);
+    }
+
+    public function primaryImage(): HasOne
+    {
+        return $this->hasOne(PropertyImage::class)->where('is_primary', true);
+    }
+
+    public function amenities(): HasMany
+    {
+        return $this->hasMany(PropertyAmenity::class);
+    }
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(Message::class);
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function applications(): HasMany
+    {
+        return $this->hasMany(Application::class);
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function getAverageRatingAttribute(): float
+    {
+        return round($this->reviews()->avg('rating') ?? 0, 1);
+    }
+
+    public function getReviewCountAttribute(): int
+    {
+        return $this->reviews()->count();
+    }
+
+    public function scopeAvailable(Builder $query): Builder
+    {
+        return $query->where('status', 'available');
+    }
+
+    public function scopeByType(Builder $query, string $type): Builder
+    {
+        return $query->where('property_type', $type);
+    }
+
+    public function scopeByCity(Builder $query, string $city): Builder
+    {
+        return $query->where('city', $city);
+    }
+}
