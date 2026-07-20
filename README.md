@@ -104,15 +104,6 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 Visit `http://localhost:8000` in your browser to view the application!
 
-## 🔐 Default Test Accounts
-
-After running the seeder, you can log in using the following accounts:
-
-| Role | Username | Password |
-| :--- | :--- | :--- |
-| **Admin** | `admin` | `admin123` |
-| **Landlord** | `landlord1` | `password123` |
-| **Tenant** | `tenant1` | `password123` |
 
 ## 📜 License
 
