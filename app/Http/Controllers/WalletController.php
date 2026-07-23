@@ -7,10 +7,12 @@ use App\Models\PayoutRequest;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class WalletController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $user = Auth::user();
         
@@ -44,7 +46,7 @@ class WalletController extends Controller
         return view('wallet.index', compact('wallet', 'payoutRequests', 'totalEarnings'));
     }
 
-    public function withdraw(Request $request)
+    public function withdraw(Request $request): RedirectResponse
     {
         $request->validate([
             'amount' => 'required|numeric|min:500',

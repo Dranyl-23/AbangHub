@@ -45,13 +45,14 @@
 
             <p>If you have already made this payment, please disregard this email or check your dashboard for updates.</p>
             
-            <p>Thanks,<br>The RentEase Team</p>
+            <p>Thanks,<br>The AbangHub Team</p>
         </div>
 
         <div class="footer">
-            &copy; {{ date('Y') }} RentEase. All rights reserved.<br>
+            &copy; {{ date('Y') }} AbangHub. All rights reserved.<br>
             Digos City, Davao del Sur, Philippines
         </div>
     </div>
 </body>
 </html>
+

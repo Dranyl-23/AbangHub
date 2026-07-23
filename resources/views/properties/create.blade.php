@@ -7,7 +7,7 @@
                     <h2 class="text-3xl font-bold leading-7 text-slate-900 dark:text-white sm:truncate sm:text-4xl sm:tracking-tight">
                         Add New Property
                     </h2>
-                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">List your space and start earning with RentEase.</p>
+                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">List your space and start earning with AbangHub.</p>
                 </div>
                 <a href="{{ route('properties.index') }}" class="text-sm font-medium text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
                     &larr; Back to properties
@@ -152,3 +152,4 @@
         </div>
     </div>
 </x-app-layout>
+

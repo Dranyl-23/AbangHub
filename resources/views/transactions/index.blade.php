@@ -72,7 +72,7 @@
                                         <div class="text-sm font-semibold text-slate-900 dark:text-white">{{ ucfirst($txn->type) }} Payment</div>
                                         <div class="text-sm text-slate-500 dark:text-slate-400">{{ $txn->property->title ?? 'N/A' }}</div>
                                         @if(auth()->user()->user_type === 'landlord')
-                                            <div class="text-xs text-rose-600 dark:text-rose-400 font-medium mt-1">From: {{ $txn->user->first_name }} {{ $txn->user->last_name }}</div>
+                                            <div class="text-xs text-rose-600 dark:text-rose-400 font-medium mt-1">From: {{ $txn->user->full_name }}</div>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">

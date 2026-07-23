@@ -12,7 +12,7 @@
                         <x-application-logo class="w-16 h-16 text-white" />
                     </div>
                 </div>
-                <h1 class="text-4xl font-bold text-white mb-4 tracking-tight">RentEase</h1>
+                <h1 class="text-4xl font-bold text-white mb-4 tracking-tight">AbangHub</h1>
                 <p class="text-rose-50 text-lg max-w-md mx-auto">Find Your Perfect Home in Digos City. The most trusted platform for tenants and landlords.</p>
             </div>
             
@@ -28,7 +28,7 @@
                 <!-- Mobile Logo (shown only on small screens) -->
                 <div class="lg:hidden flex items-center justify-center gap-2 mb-8">
                     <x-application-logo class="w-8 h-8 text-rose-600" />
-                    <span class="text-2xl font-bold text-rose-600">RentEase</span>
+                    <span class="text-2xl font-bold text-rose-600">AbangHub</span>
                 </div>
 
                 <div class="mb-8">
@@ -109,3 +109,4 @@
         </div>
     </div>
 </x-guest-layout>
+

@@ -9,7 +9,7 @@
                         <x-application-logo class="w-16 h-16 text-white" />
                     </div>
                 </div>
-                <h1 class="text-4xl font-bold text-white mb-4 tracking-tight">Join RentEase</h1>
+                <h1 class="text-4xl font-bold text-white mb-4 tracking-tight">Join AbangHub</h1>
                 <p class="text-rose-50 text-lg max-w-md mx-auto">Start your journey with us. Whether you're looking for a place or renting one out, we've got you covered.</p>
             </div>
             
@@ -19,11 +19,11 @@
 
         <!-- Right Side: Register Form -->
         <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-slate-50 dark:bg-slate-900">
-            <div class="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 p-8 my-8">
+            <div class="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 p-8 my-8" x-data="{ role: 'tenant' }">
                 
                 <div class="lg:hidden flex items-center justify-center gap-2 mb-8">
                     <x-application-logo class="w-8 h-8 text-rose-600" />
-                    <span class="text-2xl font-bold text-rose-600">RentEase</span>
+                    <span class="text-2xl font-bold text-rose-600">AbangHub</span>
                 </div>
 
                 <div class="mb-8">
@@ -36,7 +36,7 @@
 
                     <!-- Google Signup Button -->
                     <div>
-                        <a href="{{ route('google.redirect') }}" class="w-full flex items-center justify-center py-2.5 px-4 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm bg-white dark:bg-slate-700 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-colors">
+                        <a :href="'{{ route('google.redirect') }}?role=' + role" class="w-full flex items-center justify-center py-2.5 px-4 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm bg-white dark:bg-slate-700 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-colors">
                             <svg class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -61,14 +61,14 @@
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">I want to...</label>
                         <div class="grid grid-cols-2 gap-4">
                             <label class="cursor-pointer">
-                                <input type="radio" name="user_type" value="tenant" class="peer sr-only" checked>
+                                <input type="radio" name="user_type" value="tenant" class="peer sr-only" x-model="role" checked>
                                 <div class="rounded-lg border-2 border-slate-200 dark:border-slate-700 px-4 py-3 text-center peer-checked:border-rose-500 peer-checked:bg-rose-50 dark:peer-checked:bg-rose-900/20 transition-all">
                                     <span class="block text-sm font-medium text-slate-900 dark:text-white">Find a place</span>
                                     <span class="block text-xs text-slate-500 dark:text-slate-400 mt-1">Tenant</span>
                                 </div>
                             </label>
                             <label class="cursor-pointer">
-                                <input type="radio" name="user_type" value="landlord" class="peer sr-only">
+                                <input type="radio" name="user_type" value="landlord" class="peer sr-only" x-model="role">
                                 <div class="rounded-lg border-2 border-slate-200 dark:border-slate-700 px-4 py-3 text-center peer-checked:border-rose-500 peer-checked:bg-rose-50 dark:peer-checked:bg-rose-900/20 transition-all">
                                     <span class="block text-sm font-medium text-slate-900 dark:text-white">List a property</span>
                                     <span class="block text-xs text-slate-500 dark:text-slate-400 mt-1">Landlord</span>
@@ -149,3 +149,4 @@
         </div>
     </div>
 </x-guest-layout>
+

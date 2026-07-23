@@ -33,11 +33,11 @@
                     <div class="grid grid-cols-2 gap-6 bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl mb-8">
                         <div>
                             <p class="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Landlord</p>
-                            <p class="text-slate-900 dark:text-white font-medium">{{ $lease->property->owner->name }}</p>
+                            <p class="text-slate-900 dark:text-white font-medium">{{ $lease->property->owner->full_name ?? $lease->property->owner->username }}</p>
                         </div>
                         <div>
                             <p class="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Tenant</p>
-                            <p class="text-slate-900 dark:text-white font-medium">{{ auth()->user()->name }}</p>
+                            <p class="text-slate-900 dark:text-white font-medium">{{ auth()->user()->full_name }}</p>
                         </div>
                         <div>
                             <p class="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1">Monthly Rent</p>
@@ -52,7 +52,7 @@
                     <!-- Fake Document Content -->
                     <div class="prose prose-slate dark:prose-invert max-w-none text-sm text-slate-600 dark:text-slate-400 h-96 overflow-y-auto pr-4 custom-scrollbar bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-100 dark:border-slate-700">
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">1. Terms of Agreement</h3>
-                        <p>This Lease Agreement is made between the Landlord, <strong>{{ $lease->property->owner->name }}</strong>, and the Tenant, <strong>{{ auth()->user()->name }}</strong>. The Landlord hereby leases to the Tenant the property located at <strong>{{ $lease->property->address }}, {{ $lease->property->city }}</strong> for the term specified above.</p>
+                        <p>This Lease Agreement is made between the Landlord, <strong>{{ $lease->property->owner->full_name ?? $lease->property->owner->username }}</strong>, and the Tenant, <strong>{{ auth()->user()->full_name }}</strong>. The Landlord hereby leases to the Tenant the property located at <strong>{{ $lease->property->address }}, {{ $lease->property->city }}</strong> for the term specified above.</p>
                         
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 mt-6">2. Rent Payments</h3>
                         <p>The Tenant agrees to pay the Monthly Rent of <strong>₱{{ number_format($lease->monthly_rent, 0) }}</strong> in advance on the same day of each month. A security deposit may be required before move-in.</p>

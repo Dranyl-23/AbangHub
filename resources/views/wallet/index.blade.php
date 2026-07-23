@@ -67,7 +67,7 @@
                             <div class="flex items-center justify-between border-t border-white/20 pt-6">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10">
-                                        <span class="text-white font-bold text-sm">{{ substr(Auth::user()->first_name ?? 'L', 0, 1) }}</span>
+                                        <span class="text-white font-bold text-sm">{{ substr(Auth::user()->full_name ?? 'L', 0, 1) }}</span>
                                     </div>
                                     <div>
                                         <p class="text-white/60 text-xs font-semibold uppercase">Account Holder</p>
@@ -169,7 +169,7 @@
                             </button>
                             
                             <p class="text-center text-xs text-slate-500 font-medium">
-                                Secured by <span class="font-bold text-slate-700 dark:text-slate-300">RentEase Pay</span>. Funds usually arrive within 5-10 minutes.
+                                Secured by <span class="font-bold text-slate-700 dark:text-slate-300">AbangHub Pay</span>. Funds usually arrive within 5-10 minutes.
                             </p>
                         </form>
                     </div>
@@ -241,3 +241,4 @@
         </div>
     </div>
 </x-app-layout>
+

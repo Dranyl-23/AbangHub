@@ -29,16 +29,58 @@
             </div>
         </div>
 
+        <!-- KYC Banner -->
+        @if(!Auth::user()->is_verified)
+            @php
+                $pendingDoc = Auth::user()->documents()->where('status', 'pending')->first();
+            @endphp
+            <div class="w-full mb-8 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl p-6 shadow-sm">
+                @if($pendingDoc)
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-amber-100 dark:bg-amber-800 rounded-full flex items-center justify-center shrink-0">
+                            <svg class="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-amber-900 dark:text-amber-400">Verification Pending</h3>
+                            <p class="text-sm text-amber-700 dark:text-amber-300">Your ID is currently being reviewed by our team. Please wait for approval to get your Verified badge.</p>
+                        </div>
+                    </div>
+                @else
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-amber-100 dark:bg-amber-800 rounded-full flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-amber-900 dark:text-amber-400">Get Verified</h3>
+                                <p class="text-sm text-amber-700 dark:text-amber-300">Upload a Valid ID to get the "Verified Landlord" badge. This increases tenant trust and bookings.</p>
+                            </div>
+                        </div>
+                        <form action="{{ route('landlord.compliance.store') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row gap-3 w-full md:w-auto items-center">
+                            @csrf
+                            <input type="hidden" name="document_type" value="valid_id">
+                            <input type="file" name="document_file" required class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-100 file:text-amber-700 hover:file:bg-amber-200 cursor-pointer">
+                            <button type="submit" class="px-6 py-2.5 bg-amber-600 text-white rounded-full text-sm font-bold shadow-sm hover:bg-amber-700 transition-colors whitespace-nowrap">Upload ID</button>
+                        </form>
+                    </div>
+                @endif
+            </div>
+        @endif
+
         <!-- Clean, Subtle Stats -->
         <div class="w-full mb-12">
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
                 <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
-                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Total Revenue</p>
-                    <p class="text-2xl font-semibold">₱{{ number_format($stats['totalRevenue'] ?? 0, 0) }}</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Net Income</p>
+                    <p class="text-2xl font-semibold text-emerald-600 dark:text-emerald-400">₱{{ number_format($stats['netIncome'] ?? 0, 0) }}</p>
                 </div>
                 <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
-                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Monthly Revenue</p>
-                    <p class="text-2xl font-semibold text-emerald-600 dark:text-emerald-400">₱{{ number_format($stats['monthlyRevenue'] ?? 0, 0) }}</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Total Revenue</p>
+                    <p class="text-2xl font-semibold text-slate-900 dark:text-white">₱{{ number_format($stats['totalRevenue'] ?? 0, 0) }}</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Total Expenses</p>
+                    <p class="text-2xl font-semibold text-rose-600 dark:text-rose-400">₱{{ number_format($stats['totalExpenses'] ?? 0, 0) }}</p>
                 </div>
                 <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
                     <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Pending Payments</p>
@@ -46,7 +88,7 @@
                 </div>
                 <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
                     <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Vacant Units</p>
-                    <p class="text-2xl font-semibold text-rose-600 dark:text-rose-400">{{ $stats['vacantUnits'] ?? 0 }}</p>
+                    <p class="text-2xl font-semibold text-slate-900 dark:text-white">{{ $stats['vacantUnits'] ?? 0 }}</p>
                 </div>
             </div>
         </div>
@@ -130,62 +172,95 @@
                         </div>
                     </div>
 
-                    <!-- Maintenance Requests -->
+                    <!-- Active Tenants & Reviews -->
                     <div>
                         <div class="flex items-center justify-between mb-6">
-                            <h2 class="text-2xl font-semibold tracking-tight">Maintenance Tickets</h2>
-                            @if(count($maintenanceRequests) > 0)
-                                <span class="bg-rose-100 dark:bg-rose-900/40 text-rose-800 dark:text-rose-400 py-1 px-3 rounded-full text-xs font-semibold">{{ count($maintenanceRequests) }} Ongoing</span>
-                            @endif
+                            <h2 class="text-2xl font-semibold tracking-tight">Active Tenants</h2>
                         </div>
                         
                         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
                             <ul role="list" class="divide-y divide-slate-100 dark:divide-slate-700">
-                                @forelse($maintenanceRequests as $req)
-                                    <li class="p-5 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors" x-data="{ showForm: false }">
-                                        <div class="flex items-start justify-between cursor-pointer" @click="showForm = !showForm">
-                                            <div class="flex-1 min-w-0 pr-4">
-                                                <h3 class="text-[15px] font-semibold hover:underline">{{ $req->title }}</h3>
-                                                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">{{ $req->property->title }} • {{ $req->user->full_name }}</p>
+                                @forelse($activeLeases as $lease)
+                                    <li class="p-5 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors">
+                                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                            <div class="flex items-center gap-4">
+                                                <div class="w-12 h-12 shrink-0 rounded-full overflow-hidden bg-slate-200">
+                                                    @if($lease->tenant->profile_image)
+                                                        <img src="{{ Storage::url($lease->tenant->profile_image) }}" class="w-full h-full object-cover">
+                                                    @else
+                                                        <img src="https://ui-avatars.com/api/?name={{ urlencode($lease->tenant->full_name) }}&background=e2e8f0&color=0f172a" class="w-full h-full object-cover">
+                                                    @endif
+                                                </div>
+                                                <div>
+                                                    <div class="flex items-center gap-2">
+                                                        <p class="text-[15px] font-semibold">{{ $lease->tenant->full_name }}</p>
+                                                        @if($lease->tenant->average_tenant_rating > 0)
+                                                            <div class="flex items-center gap-1 text-sm bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-500 px-2 rounded-full">
+                                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                                                <span class="font-bold">{{ number_format($lease->tenant->average_tenant_rating, 1) }}</span>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Renting <span class="text-slate-900 dark:text-white font-medium">{{ $lease->property->title }}</span></p>
+                                                </div>
                                             </div>
-                                            @if($req->status === 'resolved')
-                                                <span class="inline-flex items-center rounded-full bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">Fixed (₱{{ number_format($req->cost, 0) }})</span>
-                                            @elseif($req->status === 'in_progress')
-                                                <span class="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-900/30 px-2.5 py-1 text-xs font-medium text-blue-700 dark:text-blue-400">Working</span>
-                                            @else
-                                                <span class="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-700 px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300">Pending</span>
-                                            @endif
-                                        </div>
-                                        
-                                        <!-- Update Form (Alpine x-show) -->
-                                        <div x-show="showForm" x-transition class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700">
-                                            <form action="{{ route('tenant.maintenance.update', $req) }}" method="POST" class="flex flex-col sm:flex-row gap-3 items-end">
-                                                @csrf
-                                                @method('PATCH')
+                                            <div class="flex gap-2 shrink-0" x-data="{ showReviewModal: false }">
+                                                <a href="{{ route('leases.download', $lease) }}" class="px-4 py-1.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-sm font-medium hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center gap-1.5" title="Download Contract">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                                    <span class="hidden sm:inline">Contract</span>
+                                                </a>
+                                                <a href="{{ route('messages.show', $lease->tenant) }}" class="px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">Message</a>
+                                                @php
+                                                    $hasReviewedTenant = \App\Models\TenantReview::where('landlord_id', auth()->id())->where('tenant_id', $lease->tenant_id)->exists();
+                                                @endphp
+                                                @if(!$hasReviewedTenant)
+                                                    <button @click="showReviewModal = true" class="px-4 py-1.5 bg-yellow-400 text-slate-900 rounded-lg text-sm font-bold hover:bg-yellow-500 transition-colors shadow-sm">Rate Tenant</button>
+                                                @else
+                                                    <span class="px-4 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-medium border border-emerald-200">Rated</span>
+                                                @endif
                                                 
-                                                <div class="w-full sm:w-auto flex-1">
-                                                    <label class="block text-xs font-medium text-slate-500 mb-1">Status</label>
-                                                    <select name="status" class="w-full rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm focus:ring-rose-500">
-                                                        <option value="pending" {{ $req->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                                        <option value="in_progress" {{ $req->status == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                                                        <option value="resolved" {{ $req->status == 'resolved' ? 'selected' : '' }}>Resolved</option>
-                                                    </select>
+                                                <!-- Tenant Review Modal -->
+                                                <div x-show="showReviewModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                                                    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                                                        <div x-show="showReviewModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" @click="showReviewModal = false" aria-hidden="true"></div>
+                                                        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                                                        <div x-show="showReviewModal" x-transition:enter="ease-out duration-300 transform" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200 transform" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white dark:bg-slate-800 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
+                                                            <div class="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                                                <div class="sm:flex sm:items-start">
+                                                                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                                                        <h3 class="text-xl leading-6 font-bold text-slate-900 dark:text-white mb-4" id="modal-title">Rate {{ $lease->tenant->full_name }}</h3>
+                                                                        <form action="{{ route('tenants.reviews.store', $lease->tenant) }}" method="POST" x-data="{ rating: 0, hoverRating: 0 }">
+                                                                            @csrf
+                                                                            <input type="hidden" name="rating" x-model="rating">
+                                                                            
+                                                                            <div class="flex items-center justify-center sm:justify-start mb-6">
+                                                                                <template x-for="i in 5">
+                                                                                    <svg @click="rating = i" @mouseenter="hoverRating = i" @mouseleave="hoverRating = 0" class="w-10 h-10 cursor-pointer transition-colors" :class="(hoverRating >= i || rating >= i) ? 'text-yellow-400' : 'text-slate-200 dark:text-slate-600'" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                                                                </template>
+                                                                            </div>
+                                                                            
+                                                                            <div class="mb-4 text-left">
+                                                                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Feedback (Optional)</label>
+                                                                                <textarea name="comment" rows="3" placeholder="Is this tenant a good payer? Does they keep the house clean?" class="w-full rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-rose-500 focus:border-rose-500"></textarea>
+                                                                            </div>
+                                                                            
+                                                                            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                                                                <button type="submit" :disabled="rating === 0" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-rose-600 text-base font-bold text-white hover:bg-rose-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed">Submit Review</button>
+                                                                                <button type="button" @click="showReviewModal = false" class="mt-3 w-full inline-flex justify-center rounded-xl border border-slate-300 dark:border-slate-600 shadow-sm px-4 py-2 bg-white dark:bg-slate-800 text-base font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">Cancel</button>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                
-                                                <div class="w-full sm:w-auto flex-1">
-                                                    <label class="block text-xs font-medium text-slate-500 mb-1">Cost (₱) if fixed</label>
-                                                    <input type="number" name="cost" value="{{ $req->cost > 0 ? $req->cost : '' }}" placeholder="0.00" class="w-full rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm focus:ring-rose-500">
-                                                </div>
-                                                
-                                                <button type="submit" class="w-full sm:w-auto px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-sm font-medium hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors">
-                                                    Update
-                                                </button>
-                                            </form>
+                                            </div>
                                         </div>
                                     </li>
                                 @empty
                                     <li class="p-8 text-center text-slate-500 dark:text-slate-400 text-sm">
-                                        All properties are in perfect condition!
+                                        You don't have any active tenants right now.
                                     </li>
                                 @endforelse
                             </ul>
@@ -225,7 +300,7 @@
                                             </div>
                                             <div class="flex-1 min-w-0">
                                                 <p class="text-[15px] font-semibold truncate">{{ $msg->sender->full_name }}</p>
-                                                <p class="text-sm text-slate-500 dark:text-slate-400 truncate mt-0.5">{{ $msg->message }}</p>
+                                                <p class="text-sm text-slate-500 dark:text-slate-400 truncate mt-0.5">{{ $msg->content }}</p>
                                             </div>
                                         </a>
                                     </li>
@@ -368,3 +443,4 @@
         });
     });
 </script>
+

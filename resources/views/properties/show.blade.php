@@ -288,7 +288,12 @@
                                         <img src="https://ui-avatars.com/api/?name={{ urlencode($property->owner->full_name) }}&background=10b981&color=fff" alt="{{ $property->owner->full_name }}" class="w-14 h-14 rounded-full border-2 border-white shadow-sm group-hover:scale-105 transition-transform">
                                     @endif
                                     <div>
-                                        <h4 class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-rose-600 transition-colors">{{ $property->owner->full_name }}</h4>
+                                        <div class="flex items-center gap-1.5">
+                                            <h4 class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-rose-600 transition-colors">{{ $property->owner->full_name }}</h4>
+                                            @if($property->owner->is_verified)
+                                                <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 24 24" title="Verified Landlord"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                                            @endif
+                                        </div>
                                         <p class="text-sm text-slate-500">Joined {{ $property->owner->created_at ? $property->owner->created_at->format('M Y') : 'recently' }}</p>
                                     </div>
                                 </a>

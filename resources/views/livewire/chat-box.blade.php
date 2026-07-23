@@ -17,12 +17,12 @@
                     <li wire:click="selectConversation({{ $user->id }})" class="cursor-pointer hover:bg-white dark:hover:bg-slate-700/50 transition-colors {{ $activeUser && $activeUser->id === $user->id ? 'bg-white dark:bg-slate-700 border-l-4 border-rose-500' : '' }}">
                         <div class="flex items-center p-4">
                             <div class="relative">
-                                <img class="h-12 w-12 rounded-full object-cover bg-slate-200" src="https://ui-avatars.com/api/?name={{ urlencode($user->first_name . ' ' . $user->last_name) }}&background=10b981&color=fff" alt="">
+                                <img class="h-12 w-12 rounded-full object-cover bg-slate-200" src="https://ui-avatars.com/api/?name={{ urlencode($user->full_name) }}&background=10b981&color=fff" alt="">
                                 <span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-rose-400 ring-2 ring-white dark:ring-slate-800"></span>
                             </div>
                             <div class="ml-4 flex-1 overflow-hidden">
                                 <div class="flex justify-between items-baseline">
-                                    <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">{{ $user->first_name }} {{ $user->last_name }}</p>
+                                    <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">{{ $user->full_name }}</p>
                                     <span class="text-xs text-slate-500 dark:text-slate-400"></span>
                                 </div>
                                 <p class="text-xs text-slate-500 dark:text-slate-400 truncate capitalize">{{ $user->user_type }}</p>
@@ -44,9 +44,9 @@
             <!-- Chat Header -->
             <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
                 <div class="flex items-center">
-                    <img class="h-10 w-10 rounded-full object-cover bg-slate-200" src="https://ui-avatars.com/api/?name={{ urlencode($activeUser->first_name . ' ' . $activeUser->last_name) }}&background=10b981&color=fff" alt="">
+                    <img class="h-10 w-10 rounded-full object-cover bg-slate-200" src="https://ui-avatars.com/api/?name={{ urlencode($activeUser->full_name) }}&background=10b981&color=fff" alt="">
                     <div class="ml-3">
-                        <p class="text-sm font-bold text-slate-900 dark:text-white">{{ $activeUser->first_name }} {{ $activeUser->last_name }}</p>
+                        <p class="text-sm font-bold text-slate-900 dark:text-white">{{ $activeUser->full_name }}</p>
                         <p class="text-xs text-rose-600 dark:text-rose-400 font-medium capitalize">{{ $activeUser->user_type }}</p>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
                             <!-- Outgoing Message -->
                             <div class="flex justify-end">
                                 <div class="max-w-[75%] rounded-2xl rounded-tr-none bg-rose-600 px-5 py-3 text-sm text-white shadow-sm">
-                                    {{ $msg->message }}
+                                    {{ $msg->content }}
                                     <span class="block mt-1 text-[10px] text-rose-200 text-right">{{ $msg->created_at->format('g:i A') }}</span>
                                 </div>
                             </div>
@@ -73,7 +73,7 @@
                             <!-- Incoming Message -->
                             <div class="flex justify-start">
                                 <div class="max-w-[75%] rounded-2xl rounded-tl-none bg-white dark:bg-slate-700 px-5 py-3 text-sm text-slate-800 dark:text-slate-200 shadow-sm border border-slate-200 dark:border-slate-600">
-                                    {{ $msg->message }}
+                                    {{ $msg->content }}
                                     <span class="block mt-1 text-[10px] text-slate-400 text-left">{{ $msg->created_at->format('g:i A') }}</span>
                                 </div>
                             </div>

@@ -4,20 +4,19 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
 use Illuminate\Database\Eloquent\Relations\HasMany;
-
-#[Fillable(['username', 'email', 'password', 'full_name', 'phone', 'user_type', 'profile_image', 'google_id'])]
-#[Hidden(['password', 'remember_token'])]
+use Illuminate\Database\Eloquent\Relations\HasOne;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    protected $fillable = ['username', 'email', 'password', 'full_name', 'phone', 'user_type', 'profile_image', 'google_id', 'is_verified', 'is_banned'];
+
+    protected $hidden = ['password', 'remember_token'];
 
     /**
      * Get the attributes that should be cast.
@@ -29,6 +28,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_verified' => 'boolean',
+            'is_banned' => 'boolean',
         ];
     }
 
@@ -40,6 +41,11 @@ class User extends Authenticatable
     public function documents(): HasMany
     {
         return $this->hasMany(LandlordDocument::class);
+    }
+
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(Wallet::class);
     }
 
     public function sentMessages(): HasMany
@@ -80,5 +86,31 @@ class User extends Authenticatable
     public function leases(): HasMany
     {
         return $this->hasMany(Lease::class, 'tenant_id');
+    }
+
+    public function propertyReviews(): HasMany
+    {
+        return $this->hasMany(Review::class, 'tenant_id');
+    }
+
+    public function tenantReviewsGiven(): HasMany
+    {
+        return $this->hasMany(TenantReview::class, 'landlord_id');
+    }
+
+    public function tenantReviewsReceived(): HasMany
+    {
+        return $this->hasMany(TenantReview::class, 'tenant_id');
+    }
+
+    public function getAverageTenantRatingAttribute(): float
+    {
+        return (float) ($this->tenantReviewsReceived->avg('rating') ?? 0);
+    }
+
+    public function getAverageLandlordRatingAttribute(): float
+    {
+        // Average of all reviews on their properties
+        return (float) (Review::whereIn('property_id', $this->properties()->pluck('id'))->avg('rating') ?? 0);
     }
 }

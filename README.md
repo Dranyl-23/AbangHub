@@ -1,6 +1,6 @@
 <div align="center">
   
-# 🏠 RentEase
+# 🏠 AbangHub
 
 **The most trusted platform connecting tenants with quality boarding houses and apartments in Digos City.**
 
@@ -12,9 +12,9 @@
 
 ---
 
-## 📖 About RentEase
+## 📖 About AbangHub
 
-RentEase is a modern, comprehensive property rental management system designed specifically for the local market in Digos City. It bridges the gap between property owners (Landlords) and renters (Tenants) by providing a secure, transparent, and hassle-free environment for finding properties, signing leases, managing maintenance requests, and processing payments.
+AbangHub is a modern, comprehensive property rental management system designed specifically for the local market in Digos City. It bridges the gap between property owners (Landlords) and renters (Tenants) by providing a secure, transparent, and hassle-free environment for finding properties, signing leases, managing maintenance requests, and processing payments.
 
 ## ✨ Key Features
 
@@ -58,8 +58,8 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Dranyl-23/RentEase.git
-   cd RentEase/rentease
+   git clone https://github.com/Dranyl-23/AbangHub.git
+   cd AbangHub/AbangHub
    ```
 
 2. **Install PHP dependencies**
@@ -108,3 +108,4 @@ Visit `http://localhost:8000` in your browser to view the application!
 ## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+

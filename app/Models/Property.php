@@ -2,23 +2,32 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Builder;
-
-#[Fillable([
-    'title', 'property_type', 'bedrooms', 'bathrooms', 'floor_area', 
-    'monthly_rent', 'security_deposit', 'address', 'city', 'province', 
-    'barangay', 'description', 'status', 'furnishing_status', 
-    'parking_spaces', 'pet_policy', 'owner_id'
-])]
 class Property extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'title', 'property_type', 'bedrooms', 'bathrooms', 'floor_area', 
+        'monthly_rent', 'security_deposit', 'address', 'city', 'province', 
+        'barangay', 'description', 'status', 'furnishing_status', 
+        'parking_spaces', 'pet_policy', 'owner_id', 'latitude', 'longitude', 'is_banned'
+    ];
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('notBanned', function (Builder $builder) {
+            // Only apply if user is not admin, or if not logged in
+            if (!auth()->check() || auth()->user()->user_type !== 'admin') {
+                $builder->where('is_banned', false);
+            }
+        });
+    }
 
     protected function casts(): array
     {
@@ -26,6 +35,9 @@ class Property extends Model
             'monthly_rent' => 'decimal:2',
             'security_deposit' => 'decimal:2',
             'floor_area' => 'decimal:2',
+            'latitude' => 'decimal:8',
+            'longitude' => 'decimal:8',
+            'is_banned' => 'boolean',
         ];
     }
 

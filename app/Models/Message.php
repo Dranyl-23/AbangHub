@@ -2,15 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
 
-#[Fillable(['sender_id', 'receiver_id', 'property_id', 'content', 'is_read'])]
 class Message extends Model
 {
+    protected $fillable = ['sender_id', 'receiver_id', 'property_id', 'content', 'is_read'];
     use HasFactory;
 
     protected function casts(): array

@@ -7,12 +7,15 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 
 class ReportController extends Controller
 {
-    public function index()
+    public function index(): View|RedirectResponse
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         
         // Ensure only landlords or admins can see reports
         if ($user->user_type !== 'landlord' && $user->user_type !== 'admin') {
@@ -62,7 +65,8 @@ class ReportController extends Controller
 
     public function export(): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         $propertyIds = Property::where('owner_id', $user->id)->pluck('id');
 
         $data = Transaction::with(['user', 'property'])
@@ -76,7 +80,7 @@ class ReportController extends Controller
             foreach ($data as $row) {
                 fputcsv($handle, [
                     $row->created_at->format('Y-m-d'),
-                    $row->user->first_name . ' ' . $row->user->last_name,
+                    $row->user->full_name ?? $row->user->username,
                     $row->property->title ?? 'N/A',
                     ucfirst($row->type),
                     number_format($row->amount, 2),

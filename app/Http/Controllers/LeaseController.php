@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Lease;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class LeaseController extends Controller
 {
-    public function sign(Lease $lease)
+    public function sign(Lease $lease): View|RedirectResponse
     {
-        if (auth()->id() !== $lease->tenant_id) {
+        if (Auth::id() !== $lease->tenant_id) {
             abort(403);
         }
 
@@ -20,9 +24,9 @@ class LeaseController extends Controller
         return view('tenant.leases.sign', compact('lease'));
     }
 
-    public function processSignature(Request $request, Lease $lease)
+    public function processSignature(Request $request, Lease $lease): RedirectResponse
     {
-        if (auth()->id() !== $lease->tenant_id) {
+        if (Auth::id() !== $lease->tenant_id) {
             abort(403);
         }
 
@@ -41,5 +45,17 @@ class LeaseController extends Controller
         ]);
 
         return redirect()->route('tenant.invoices.index')->with('success', 'Lease signed successfully! Please pay your initial invoice to complete the move-in process.');
+    }
+
+    public function downloadContract(Lease $lease)
+    {
+        // Only tenant or landlord can download
+        if (Auth::id() !== $lease->tenant_id && Auth::id() !== $lease->property->owner_id) {
+            abort(403);
+        }
+
+        $pdf = Pdf::loadView('pdf.lease-contract', compact('lease'));
+        
+        return $pdf->download('lease-contract-' . $lease->id . '.pdf');
     }
 }

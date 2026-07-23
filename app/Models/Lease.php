@@ -18,11 +18,14 @@ class Lease extends Model
         'end_date',
         'monthly_rent',
         'status',
+        'tenant_signature',
+        'signed_at',
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
+        'signed_at' => 'datetime',
     ];
 
     public function tenant(): BelongsTo

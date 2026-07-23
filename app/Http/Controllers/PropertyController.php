@@ -9,6 +9,7 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class PropertyController extends Controller
 {
@@ -16,7 +17,9 @@ class PropertyController extends Controller
 
     public function index(): View
     {
-        if (auth()->user()->user_type === 'landlord') {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if ($user->user_type === 'landlord') {
             return view('properties.manage');
         }
 
@@ -26,7 +29,7 @@ class PropertyController extends Controller
 
     public function show(Property $property): View
     {
-        $property->load(['images', 'amenities', 'owner']);
+        $property->load(['images', 'amenities', 'owner', 'reviews.tenant']);
         return view('properties.show', compact('property'));
     }
 
@@ -55,7 +58,7 @@ class PropertyController extends Controller
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120', // Max 5MB per image
         ]);
 
-        $validated['owner_id'] = auth()->id();
+        $validated['owner_id'] = Auth::id();
         
         $property = Property::create($validated);
 
@@ -141,7 +144,8 @@ class PropertyController extends Controller
 
     public function toggleFavorite(Request $request, Property $property)
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         
         $favorite = \App\Models\Favorite::where('user_id', $user->id)
             ->where('property_id', $property->id)

@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? config('app.name', 'RentEase') }}</title>
-    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <title>{{ $title ?? config('app.name', 'AbangHub') }}</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg?v=4') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -28,7 +28,7 @@
                         <div class="shrink-0 flex items-center">
                             <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
                                 <x-application-logo class="w-8 h-8 text-rose-600" />
-                                <span class="text-xl font-bold text-rose-600">RentEase</span>
+                                <span class="text-xl font-bold text-rose-600">AbangHub</span>
                             </a>
                         </div>
 
@@ -109,8 +109,10 @@
                                         <a href="{{ route('tenant.favorites.index') }}" class="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium">My Favorites</a>
                                         <a href="{{ route('tenant.maintenance.index') }}" class="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium">Maintenance Requests</a>
                                     @endif
-                                    <a href="{{ route('transactions.index') }}" class="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium">Transactions</a>
-                                    @if(Auth::user()->user_type !== 'tenant')
+                                    @if(Auth::user()->user_type !== 'admin')
+                                        <a href="{{ route('transactions.index') }}" class="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium">Transactions</a>
+                                    @endif
+                                    @if(Auth::user()->user_type === 'landlord')
                                         <a href="{{ route('wallet.index') }}" class="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium flex justify-between items-center">
                                             My Wallet
                                             <span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full">₱{{ number_format(Auth::user()->wallet->balance ?? 0, 0) }}</span>
@@ -118,6 +120,11 @@
                                         <a href="{{ route('reports.index') }}" class="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium">Reports</a>
                                         <a href="{{ route('landlord.compliance.index') }}" class="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium">Compliance Hub</a>
                                         <a href="{{ route('landlord.maintenance.index') }}" class="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium">Maintenance Requests</a>
+                                    @endif
+                                    @if(Auth::user()->user_type === 'admin')
+                                        <a href="{{ route('admin.users.index') }}" class="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium">Manage Users</a>
+                                        <a href="{{ route('admin.properties.index') }}" class="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium">Moderate Properties</a>
+                                        <a href="{{ route('log-viewer.index') }}" target="_blank" class="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 font-medium">System Logs</a>
                                     @endif
                                     
                                     <div class="my-2 border-t border-slate-100 dark:border-slate-700/50"></div>
@@ -161,12 +168,19 @@
                                         <a href="{{ route('tenant.favorites.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('tenant.favorites.*') ? 'bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400' : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700' }}">My Favorites</a>
                                         <a href="{{ route('tenant.maintenance.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('tenant.maintenance.*') ? 'bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400' : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700' }}">Maintenance Requests</a>
                                     @endif
-                                    <a href="{{ route('transactions.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('transactions.*') ? 'bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400' : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700' }}">Transactions</a>
-                                    @if(Auth::user()->user_type !== 'tenant')
+                                    @if(Auth::user()->user_type !== 'admin')
+                                        <a href="{{ route('transactions.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('transactions.*') ? 'bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400' : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700' }}">Transactions</a>
+                                    @endif
+                                    @if(Auth::user()->user_type === 'landlord')
                                         <a href="{{ route('wallet.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('wallet.*') ? 'bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400' : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700' }}">My Wallet</a>
                                         <a href="{{ route('reports.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('reports.*') ? 'bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400' : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700' }}">Reports</a>
                                         <a href="{{ route('landlord.compliance.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('landlord.compliance.*') ? 'bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400' : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700' }}">Compliance Hub</a>
                                         <a href="{{ route('landlord.maintenance.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('landlord.maintenance.*') ? 'bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400' : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700' }}">Maintenance Requests</a>
+                                    @endif
+                                    @if(Auth::user()->user_type === 'admin')
+                                        <a href="{{ route('admin.users.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('admin.users.*') ? 'bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400' : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700' }}">Manage Users</a>
+                                        <a href="{{ route('admin.properties.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('admin.properties.*') ? 'bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400' : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700' }}">Moderate Properties</a>
+                                        <a href="{{ route('log-viewer.index') }}" target="_blank" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700">System Logs</a>
                                     @endif
                                     <div class="border-t border-slate-200 dark:border-slate-700 my-2"></div>
                                     <a href="{{ route('profile.edit') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700">Profile</a>
@@ -190,7 +204,7 @@
         
         <footer class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 mt-auto">
             <div class="max-w-[1920px] mx-auto py-4 px-4 sm:px-8 lg:px-16 xl:px-24 flex items-center justify-between">
-                <p class="text-sm text-slate-500 dark:text-slate-400">&copy; {{ date('Y') }} RentEase. All rights reserved.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400">&copy; {{ date('Y') }} AbangHub. All rights reserved.</p>
                 <div class="flex space-x-4">
                     <a href="#" class="text-sm text-slate-500 hover:text-rose-500 dark:text-slate-400 dark:hover:text-rose-400">Privacy Policy</a>
                     <a href="#" class="text-sm text-slate-500 hover:text-rose-500 dark:text-slate-400 dark:hover:text-rose-400">Terms of Service</a>
@@ -216,7 +230,7 @@
                         </div>
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                             <h3 class="text-lg leading-6 font-bold text-slate-900 dark:text-white" id="modal-title">
-                                Log out of RentEase
+                                Log out of AbangHub
                             </h3>
                             <div class="mt-2">
                                 <p class="text-sm text-slate-500 dark:text-slate-400">
@@ -245,3 +259,8 @@
     @stack('scripts')
 </body>
 </html>
+
+
+
+
+

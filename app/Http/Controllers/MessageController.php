@@ -6,13 +6,15 @@ use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
     public function index(): View
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
 
         // Get the latest message for each conversation
         // This query finds the maximum message ID between the current user and any other user
@@ -32,7 +34,7 @@ class MessageController extends Controller
 
     public function show(User $user): View
     {
-        $currentUserId = auth()->id();
+        $currentUserId = Auth::id();
 
         // Mark messages as read
         Message::where('sender_id', $user->id)
@@ -55,7 +57,7 @@ class MessageController extends Controller
         return view('messages.show', compact('messages', 'user'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'receiver_id' => 'required|exists:users,id',
@@ -63,7 +65,7 @@ class MessageController extends Controller
             'property_id' => 'nullable|exists:properties,id',
         ]);
 
-        $validated['sender_id'] = auth()->id();
+        $validated['sender_id'] = Auth::id();
         Message::create($validated);
 
         return redirect()->route('messages.show', $validated['receiver_id'])

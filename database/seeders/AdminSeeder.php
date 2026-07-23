@@ -12,7 +12,7 @@ class AdminSeeder extends Seeder
     {
         User::create([
             'username' => 'admin',
-            'email' => 'admin@rentease.com',
+            'email' => 'admin@AbangHub.com',
             'password' => Hash::make('admin123'),
             'full_name' => 'System Administrator',
             'user_type' => 'admin',
@@ -21,7 +21,7 @@ class AdminSeeder extends Seeder
 
         User::create([
             'username' => 'landlord1',
-            'email' => 'landlord@rentease.com',
+            'email' => 'landlord@AbangHub.com',
             'password' => Hash::make('password123'),
             'full_name' => 'Juan Dela Cruz',
             'phone' => '09123456789',
@@ -31,7 +31,7 @@ class AdminSeeder extends Seeder
 
         User::create([
             'username' => 'tenant1',
-            'email' => 'tenant@rentease.com',
+            'email' => 'tenant@AbangHub.com',
             'password' => Hash::make('password123'),
             'full_name' => 'Maria Santos',
             'phone' => '09987654321',
@@ -40,3 +40,4 @@ class AdminSeeder extends Seeder
         ]);
     }
 }
+

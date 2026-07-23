@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'RentEase') }} - Find Your Perfect Home</title>
-    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <title>{{ config('app.name', 'AbangHub') }} - Find Your Perfect Home</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg?v=4') }}">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -13,29 +13,29 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-slate-50 text-slate-900 pb-16 md:pb-0" x-data="{ showLoginModal: {{ $errors->any() ? 'true' : 'false' }} }">
+<body class="font-sans antialiased bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 pb-16 md:pb-0" x-data="{ showLoginModal: {{ $errors->any() ? 'true' : 'false' }} }">
 
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/50">
+    <nav class="fixed w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/50 dark:border-slate-800/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex-shrink-0 flex items-center">
                     <a href="{{ route('home') }}" class="flex items-center gap-2 group">
                         <x-application-logo class="w-8 h-8 text-rose-600 transition-transform group-hover:scale-110" />
-                        <span class="text-xl font-bold text-slate-900 tracking-tight">Rent<span class="text-rose-600">Ease</span></span>
+                        <span class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Abang<span class="text-rose-600">Hub</span></span>
                     </a>
                 </div>
                 
                 <!-- Desktop Nav -->
                 <div class="hidden md:flex items-center space-x-6">
-                    <a href="#features" class="text-sm font-medium text-slate-600 hover:text-rose-600 transition-colors">Features</a>
-                    <a href="#listings" class="text-sm font-medium text-slate-600 hover:text-rose-600 transition-colors">Listings</a>
+                    <a href="#features" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 transition-colors">Features</a>
+                    <a href="#listings" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 transition-colors">Listings</a>
                     
                     <div class="h-6 w-px bg-slate-200"></div>
                     
                     @auth
-                        <a href="{{ route('dashboard') }}" class="text-sm font-medium text-slate-600 hover:text-rose-600 transition-colors">Dashboard</a>
+                        <a href="{{ route('dashboard') }}" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 transition-colors">Dashboard</a>
                     @else
                         <button @click="showLoginModal = true" class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-rose-600 hover:bg-rose-700 transition-all hover:shadow-md hover:-translate-y-0.5">
                             Log in
@@ -48,7 +48,7 @@
 
     <!-- Hero Section -->
     <div class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-rose-50 to-slate-50 -z-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-rose-50 to-slate-50 dark:from-slate-900 dark:to-slate-800 -z-10"></div>
         
         <!-- Decorative blobs -->
         <div class="absolute top-0 left-1/2 w-full -translate-x-1/2 h-full overflow-hidden -z-10 pointer-events-none">
@@ -57,17 +57,17 @@
         </div>
 
         <div class="w-full relative text-center px-4 sm:px-6 lg:px-8">
-            <h1 class="text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-6">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-6">
                 Find Your Perfect Home in <span class="text-rose-600 inline-block">Digos City</span>
             </h1>
-            <p class="mt-4 text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+            <p class="mt-4 text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
                 The most trusted platform connecting tenants with quality boarding houses and apartments. Transparent, secure, and hassle-free.
             </p>
             <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
                 <a href="#listings" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 border border-transparent text-base font-medium rounded-full text-white bg-rose-600 hover:bg-rose-700 shadow-sm hover:shadow-lg transition-all hover:-translate-y-0.5">
                     Browse Properties
                 </a>
-                <a href="{{ route('register') }}" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 border-2 border-slate-200 text-base font-medium rounded-full text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all">
+                <a href="{{ route('register') }}" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 border-2 border-slate-200 dark:border-slate-700 text-base font-medium rounded-full text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all">
                     List Your Property
                 </a>
             </div>
@@ -75,51 +75,51 @@
     </div>
 
     <!-- Features Section -->
-    <div id="features" class="py-24 bg-white">
+    <div id="features" class="py-24 bg-white dark:bg-slate-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="text-base text-rose-600 font-semibold tracking-wide uppercase">Why Choose RentEase</h2>
-                <p class="mt-2 text-3xl leading-8 font-bold tracking-tight text-slate-900 sm:text-4xl">
+                <h2 class="text-base text-rose-600 font-semibold tracking-wide uppercase">Why Choose AbangHub</h2>
+                <p class="mt-2 text-3xl leading-8 font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
                     A better way to rent and manage
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
                 <!-- Feature 1 -->
-                <div class="relative p-8 bg-slate-50 rounded-2xl border border-slate-100 hover:shadow-xl transition-shadow duration-300">
+                <div class="relative p-8 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 hover:shadow-xl transition-shadow duration-300">
                     <div class="absolute -top-6 left-8 h-12 w-12 flex items-center justify-center rounded-xl bg-rose-600 text-white shadow-lg">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </div>
-                    <h3 class="mt-6 text-xl font-bold text-slate-900 mb-3">Easy Search</h3>
-                    <p class="text-slate-600 leading-relaxed">
+                    <h3 class="mt-6 text-xl font-bold text-slate-900 dark:text-white mb-3">Easy Search</h3>
+                    <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
                         Find the perfect boarding house or apartment with our intuitive search and filtering tools. See all details upfront.
                     </p>
                 </div>
 
                 <!-- Feature 2 -->
-                <div class="relative p-8 bg-slate-50 rounded-2xl border border-slate-100 hover:shadow-xl transition-shadow duration-300">
+                <div class="relative p-8 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 hover:shadow-xl transition-shadow duration-300">
                     <div class="absolute -top-6 left-8 h-12 w-12 flex items-center justify-center rounded-xl bg-rose-600 text-white shadow-lg">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                         </svg>
                     </div>
-                    <h3 class="mt-6 text-xl font-bold text-slate-900 mb-3">Direct Communication</h3>
-                    <p class="text-slate-600 leading-relaxed">
+                    <h3 class="mt-6 text-xl font-bold text-slate-900 dark:text-white mb-3">Direct Communication</h3>
+                    <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
                         Chat directly with landlords or tenants through our secure messaging system. No middleman needed.
                     </p>
                 </div>
 
                 <!-- Feature 3 -->
-                <div class="relative p-8 bg-slate-50 rounded-2xl border border-slate-100 hover:shadow-xl transition-shadow duration-300">
+                <div class="relative p-8 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 hover:shadow-xl transition-shadow duration-300">
                     <div class="absolute -top-6 left-8 h-12 w-12 flex items-center justify-center rounded-xl bg-rose-600 text-white shadow-lg">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                         </svg>
                     </div>
-                    <h3 class="mt-6 text-xl font-bold text-slate-900 mb-3">Seamless Management</h3>
-                    <p class="text-slate-600 leading-relaxed">
+                    <h3 class="mt-6 text-xl font-bold text-slate-900 dark:text-white mb-3">Seamless Management</h3>
+                    <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
                         Landlords can track leases, handle maintenance requests, and monitor revenue all in one powerful dashboard.
                     </p>
                 </div>
@@ -128,14 +128,14 @@
     </div>
 
     <!-- Locations Section -->
-    <div id="listings" class="py-16 bg-white">
+    <div id="listings" class="py-16 bg-white dark:bg-slate-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
             @if(isset($featuredProperties) && $featuredProperties->count() > 0)
                 
                 <div class="mb-12">
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-slate-900">Featured Properties</h2>
+                        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Featured Properties</h2>
                         <a href="{{ route('properties.index') }}" class="text-rose-600 font-semibold hover:text-rose-700">View all</a>
                     </div>
                     
@@ -237,16 +237,16 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200">
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
         <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
             <div class="md:flex md:items-center md:justify-between">
                 <div class="flex justify-center md:justify-start items-center gap-2 mb-6 md:mb-0">
                     <x-application-logo class="w-6 h-6 text-rose-600" />
-                    <span class="text-xl font-bold text-slate-900">Rent<span class="text-rose-600">Ease</span></span>
+                    <span class="text-xl font-bold text-slate-900 dark:text-white">Abang<span class="text-rose-600">Hub</span></span>
                 </div>
                 <div class="flex justify-center space-x-6 md:order-2">
                     <p class="text-base text-slate-400">
-                        &copy; {{ date('Y') }} RentEase, Inc. All rights reserved.
+                        &copy; {{ date('Y') }} AbangHub, Inc. All rights reserved.
                     </p>
                 </div>
             </div>
@@ -276,7 +276,7 @@
                      x-transition:leave="transition-all ease-in duration-200 transform" 
                      x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
                      x-transition:leave-end="opacity-0 translate-y-8 sm:translate-y-0 sm:scale-95" 
-                     class="relative w-full max-w-md overflow-hidden rounded-2xl bg-white text-left shadow-2xl sm:my-8">
+                     class="relative w-full max-w-md overflow-hidden rounded-2xl bg-white dark:bg-slate-800 text-left shadow-2xl sm:my-8 border border-slate-200 dark:border-slate-700">
                     
                     <!-- Close Button -->
                     <button @click="showLoginModal = false" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors z-20">
@@ -286,8 +286,8 @@
                     <div class="p-8">
                         <div class="text-center mb-8">
                             <x-application-logo class="w-10 h-10 text-rose-600 mx-auto mb-4" />
-                            <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Welcome back</h2>
-                            <p class="text-slate-500 mt-2 text-sm">Log in to continue to RentEase.</p>
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Welcome back</h2>
+                            <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm">Log in to continue to AbangHub.</p>
                         </div>
                         
                         <form method="POST" action="{{ route('login') }}" class="space-y-5">
@@ -317,7 +317,7 @@
                             
                             <!-- Username or Email -->
                             <div>
-                                <label for="login" class="block text-sm font-medium text-slate-700">Username or Email</label>
+                                <label for="login" class="block text-sm font-medium text-slate-700 dark:text-slate-300">Username or Email</label>
                                 <div class="mt-1">
                                     <input id="login" type="text" name="login" value="{{ old('login') }}" required autofocus
                                         class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 sm:text-sm">
@@ -328,7 +328,7 @@
                             <!-- Password -->
                             <div>
                                 <div class="flex justify-between items-center">
-                                    <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
+                                    <label for="password" class="block text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
                                     @if (Route::has('password.request'))
                                         <a href="{{ route('password.request') }}" class="text-sm font-medium text-rose-600 hover:text-rose-500">
                                             Forgot password?
@@ -396,3 +396,8 @@
     </div>
 </body>
 </html>
+
+
+
+
+

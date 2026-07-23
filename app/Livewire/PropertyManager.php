@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Property;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Auth;
 
 class PropertyManager extends Component
 {
@@ -23,9 +24,9 @@ class PropertyManager extends Component
         $this->resetPage();
     }
 
-    public function toggleStatus($propertyId, $status)
+    public function toggleStatus(int $propertyId, string $status)
     {
-        $property = Property::where('id', $propertyId)->where('owner_id', auth()->id())->first();
+        $property = Property::where('id', $propertyId)->where('owner_id', Auth::id())->first();
         
         if ($property) {
             $property->update(['status' => $status]);
@@ -36,9 +37,9 @@ class PropertyManager extends Component
         }
     }
 
-    public function deleteProperty($propertyId)
+    public function deleteProperty(int $propertyId)
     {
-        $property = Property::where('id', $propertyId)->where('owner_id', auth()->id())->first();
+        $property = Property::where('id', $propertyId)->where('owner_id', Auth::id())->first();
         
         if ($property) {
             // Real deletion logic requires deleting images too, let's keep it simple or call a controller.
@@ -53,7 +54,7 @@ class PropertyManager extends Component
 
     public function render()
     {
-        $query = Property::where('owner_id', auth()->id())
+        $query = Property::where('owner_id', Auth::id())
             ->with('images')
             ->withCount(['applications' => function($q) {
                 $q->where('status', 'pending');

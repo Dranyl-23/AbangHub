@@ -6,14 +6,17 @@ use App\Models\Invoice;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class InvoiceController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $invoices = Invoice::with(['lease.property'])
             ->whereHas('lease', function ($query) {
-                $query->where('tenant_id', auth()->id());
+                $query->where('tenant_id', Auth::id());
             })
             ->latest()
             ->get();
@@ -21,10 +24,10 @@ class InvoiceController extends Controller
         return view('tenant.invoices.index', compact('invoices'));
     }
 
-    public function pay(Request $request, Invoice $invoice)
+    public function pay(Request $request, Invoice $invoice): RedirectResponse
     {
         // Ensure user owns this invoice
-        if (auth()->id() !== $invoice->lease->tenant_id) {
+        if (Auth::id() !== $invoice->lease->tenant_id) {
             abort(403);
         }
 
@@ -45,13 +48,13 @@ class InvoiceController extends Controller
 
         // Create transaction record
         Transaction::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'property_id' => $invoice->lease->property_id,
             'type' => 'payment',
             'amount' => $invoice->amount,
             'status' => 'completed',
             'reference_number' => strtoupper(Str::random(10)),
-            'description' => 'Payment for: ' . $invoice->description
+            'notes' => 'Payment for: ' . $invoice->description
         ]);
 
         // Add to landlord's wallet (minus a hypothetical 5% platform fee)

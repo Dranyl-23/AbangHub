@@ -9,22 +9,27 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatBox extends Component
 {
+    /** @var \Illuminate\Database\Eloquent\Collection|array */
     public $conversations = [];
+    
+    /** @var \App\Models\User|null */
     public $activeUser = null;
+    
+    /** @var \Illuminate\Database\Eloquent\Collection|array */
     public $messages = [];
     public $newMessage = '';
     
-    public function mount($selectedUserId = null)
+    public function mount(?int $selectedUserId = null)
     {
         $this->loadConversations();
         
         if ($selectedUserId) {
             $this->selectConversation($selectedUserId);
             // If the user isn't in conversations list yet, add them
-            if (!$this->conversations->contains('id', $selectedUserId)) {
+            if (!collect($this->conversations)->contains('id', $selectedUserId)) {
                 $user = User::find($selectedUserId);
                 if ($user) {
-                    $this->conversations->prepend($user);
+                    $this->conversations = collect($this->conversations)->prepend($user);
                 }
             }
         } elseif (count($this->conversations) > 0) {
@@ -52,7 +57,7 @@ class ChatBox extends Component
         $this->conversations = User::whereIn('id', $userIds)->get();
     }
 
-    public function selectConversation($userId)
+    public function selectConversation(int $userId)
     {
         $this->activeUser = User::find($userId);
         $this->loadMessages();

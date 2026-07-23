@@ -7,12 +7,15 @@ use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 
 class TransactionController extends Controller
 {
     public function index(): View
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         
         if ($user->user_type === 'landlord') {
             $propertyIds = Property::where('owner_id', $user->id)->pluck('id');
@@ -42,9 +45,10 @@ class TransactionController extends Controller
         return view('transactions.index', compact('transactions', 'totalReceived', 'pendingAmount'));
     }
 
-    public function updateStatus(Request $request, Transaction $transaction)
+    public function updateStatus(Request $request, Transaction $transaction): RedirectResponse
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         
         // Only landlords can update status of their property's transactions (or admins)
         if ($user->user_type === 'landlord') {
@@ -68,7 +72,8 @@ class TransactionController extends Controller
 
     public function export(): StreamedResponse
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         $query = Transaction::with(['user', 'property'])->latest();
         
         if ($user->user_type === 'landlord') {

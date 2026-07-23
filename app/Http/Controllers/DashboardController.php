@@ -5,13 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Property;
 use App\Models\Transaction;
 use App\Models\Message;
+use App\Models\User;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index(): View
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
         if ($user->user_type === 'admin') {
             return $this->adminDashboard($user);
@@ -22,7 +25,7 @@ class DashboardController extends Controller
         }
     }
 
-    private function tenantDashboard($user): View
+    private function tenantDashboard(User $user): View
     {
         $stats = [
             'activeLeases' => \App\Models\Lease::where('tenant_id', $user->id)
@@ -92,7 +95,7 @@ class DashboardController extends Controller
         ));
     }
 
-    private function landlordDashboard($user): View
+    private function landlordDashboard(User $user): View
     {
         $propertyIds = Property::where('owner_id', $user->id)->pluck('id');
 
@@ -106,6 +109,9 @@ class DashboardController extends Controller
                 ->where('status', 'completed')
                 ->where('created_at', '>=', now()->startOfMonth())
                 ->sum('amount'),
+            'totalExpenses' => \App\Models\MaintenanceRequest::whereIn('property_id', $propertyIds)
+                ->where('status', 'resolved')
+                ->sum('cost'),
             'pendingPayments' => Transaction::whereIn('property_id', $propertyIds)
                 ->where('status', 'pending')
                 ->sum('amount'),
@@ -117,6 +123,8 @@ class DashboardController extends Controller
                 ->where('is_read', false)
                 ->count(),
         ];
+
+        $stats['netIncome'] = $stats['totalRevenue'] - $stats['totalExpenses'];
 
         // 1. Pending Applications
         $pendingApplications = \App\Models\Application::with(['user', 'property'])
@@ -137,6 +145,13 @@ class DashboardController extends Controller
         $maintenanceRequests = \App\Models\MaintenanceRequest::with(['user', 'property'])
             ->whereIn('property_id', $propertyIds)
             ->whereIn('status', ['pending', 'in_progress'])
+            ->latest()
+            ->get();
+
+        // 3.5. Active Leases (Tenants)
+        $activeLeases = \App\Models\Lease::with(['tenant.tenantReviewsReceived', 'property'])
+            ->whereIn('property_id', $propertyIds)
+            ->whereIn('status', ['active', 'completed'])
             ->latest()
             ->get();
 
@@ -174,17 +189,25 @@ class DashboardController extends Controller
         $occupancyRate = $totalProps > 0 ? round(($rentedProps / $totalProps) * 100) : 0;
         $vacantRate = 100 - $occupancyRate;
 
-        return view('dashboard.landlord', compact('stats', 'pendingApplications', 'recentMessages', 'maintenanceRequests', 'chartData', 'occupancyRate', 'vacantRate'));
+        return view('dashboard.landlord', compact('stats', 'pendingApplications', 'recentMessages', 'maintenanceRequests', 'activeLeases', 'chartData', 'occupancyRate', 'vacantRate'));
     }
 
-    private function adminDashboard($user): View
+    private function adminDashboard(User $user): View
     {
         $stats = [
             'totalUsers' => \App\Models\User::count(),
             'totalProperties' => Property::count(),
             'totalTransactions' => Transaction::count(),
+            'totalPlatformVolume' => Transaction::where('status', 'completed')->sum('amount'),
+            // Assuming the platform takes a 5% fee on all completed transactions
+            'platformRevenue' => Transaction::where('status', 'completed')->sum('amount') * 0.05,
+            'activeLeases' => \App\Models\Lease::where('status', 'active')->count(),
+            'pendingMaintenance' => \App\Models\MaintenanceRequest::whereIn('status', ['pending', 'in_progress'])->count(),
         ];
 
-        return view('dashboard.admin', compact('stats'));
+        $pendingKyc = \App\Models\LandlordDocument::with('user')->where('status', 'pending')->latest()->get();
+
+        return view('dashboard.admin', compact('stats', 'pendingKyc'));
     }
 }
+

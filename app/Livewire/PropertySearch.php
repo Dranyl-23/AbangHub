@@ -18,7 +18,7 @@ class PropertySearch extends Component
 
     protected $queryString = ['search', 'type', 'bedrooms', 'min_price', 'max_price'];
 
-    public function updating($property)
+    public function updating(string $property)
     {
         if (in_array($property, ['search', 'type', 'bedrooms', 'min_price', 'max_price'])) {
             $this->resetPage();
@@ -67,7 +67,13 @@ class PropertySearch extends Component
                 'monthly_rent' => $prop->monthly_rent,
                 'latitude' => $prop->latitude,
                 'longitude' => $prop->longitude,
-                'url' => route('properties.show', $prop)
+                'url' => route('properties.show', $prop),
+                'image' => $prop->images->first() ? \Illuminate\Support\Facades\Storage::url($prop->images->first()->image_path) : 'https://picsum.photos/seed/' . $prop->id . '/400/300',
+                'type' => ucwords(str_replace('_', ' ', $prop->property_type)),
+                'bedrooms' => $prop->bedrooms,
+                'rating' => $prop->review_count > 0 ? number_format($prop->average_rating, 1) : 'New',
+                'city' => $prop->city,
+                'barangay' => $prop->barangay,
             ];
         })->toArray();
 

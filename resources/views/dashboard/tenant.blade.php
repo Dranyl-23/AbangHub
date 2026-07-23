@@ -63,9 +63,19 @@
                             <p class="text-lg font-semibold">{{ $activeLease->property->owner->full_name ?? 'Unknown' }}</p>
                         </div>
                     </div>
-                    <div class="flex gap-4">
-                        <a href="{{ route('properties.show', $activeLease->property) }}" class="px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-medium transition-colors">View Property</a>
-                        <button class="px-6 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Message Landlord</button>
+                    <div class="flex gap-4 flex-wrap mt-4">
+                        <a href="{{ route('leases.download', $activeLease) }}" class="px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-medium hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors text-center shadow-sm flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Contract
+                        </a>
+                        <a href="{{ route('properties.show', $activeLease->property) }}" class="px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-medium transition-colors text-center">View Property</a>
+                        <a href="{{ route('messages.show', $activeLease->property->owner) }}" class="px-6 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-center block">Message Landlord</a>
+                        @php
+                            $hasReviewed = $activeLease->property->reviews()->where('tenant_id', auth()->id())->exists();
+                        @endphp
+                        @if(!$hasReviewed)
+                            <a href="{{ route('properties.show', $activeLease->property) }}#reviews" class="px-6 py-2.5 bg-yellow-400 hover:bg-yellow-500 text-slate-900 rounded-lg font-medium transition-colors text-center">Rate Property</a>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -345,3 +355,4 @@
         </div>
     </div>
 </x-app-layout>
+

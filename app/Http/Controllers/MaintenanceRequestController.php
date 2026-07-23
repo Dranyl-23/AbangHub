@@ -7,14 +7,18 @@ use App\Models\Property;
 use App\Models\Lease;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class MaintenanceRequestController extends Controller
 {
     // Tenant: List their requests
     // Landlord: List requests for their properties
-    public function index()
+    public function index(): View
     {
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
         if ($user->user_type === 'tenant') {
             $requests = MaintenanceRequest::where('user_id', $user->id)
@@ -35,20 +39,22 @@ class MaintenanceRequestController extends Controller
     }
 
     // Tenant: Show create form
-    public function create()
+    public function create(): View
     {
-        if (auth()->user()->user_type !== 'tenant') {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if ($user->user_type !== 'tenant') {
             abort(403, 'Only tenants can create maintenance requests.');
         }
 
         // Get properties where the tenant has an approved or active lease
-        $leasedPropertyIds = Lease::where('tenant_id', auth()->id())
+        $leasedPropertyIds = Lease::where('tenant_id', Auth::id())
             ->whereIn('status', ['approved', 'active'])
             ->pluck('property_id');
             
         // Fallback: If no leases, get properties where they have an approved application
         if ($leasedPropertyIds->isEmpty()) {
-            $leasedPropertyIds = \App\Models\Application::where('user_id', auth()->id())
+            $leasedPropertyIds = \App\Models\Application::where('user_id', Auth::id())
                 ->where('status', 'approved')
                 ->pluck('property_id');
         }
@@ -59,9 +65,11 @@ class MaintenanceRequestController extends Controller
     }
 
     // Tenant: Store request
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        if (auth()->user()->user_type !== 'tenant') {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if ($user->user_type !== 'tenant') {
             abort(403);
         }
 
@@ -73,7 +81,7 @@ class MaintenanceRequestController extends Controller
         ]);
 
         $maintenanceRequest = new MaintenanceRequest();
-        $maintenanceRequest->user_id = auth()->id();
+        $maintenanceRequest->user_id = Auth::id();
         $maintenanceRequest->property_id = $validated['property_id'];
         $maintenanceRequest->title = $validated['title'];
         $maintenanceRequest->description = $validated['description'];
@@ -91,14 +99,16 @@ class MaintenanceRequestController extends Controller
     }
 
     // Landlord: Update status
-    public function update(Request $request, MaintenanceRequest $maintenance)
+    public function update(Request $request, MaintenanceRequest $maintenance): RedirectResponse
     {
-        if (auth()->user()->user_type !== 'landlord') {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if ($user->user_type !== 'landlord') {
             abort(403);
         }
 
         // Verify ownership
-        if ($maintenance->property->owner_id !== auth()->id()) {
+        if ($maintenance->property->owner_id !== Auth::id()) {
             abort(403, 'Unauthorized access.');
         }
 

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 
 class OnboardingController extends Controller
 {
@@ -16,14 +18,15 @@ class OnboardingController extends Controller
         return view('onboarding');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'user_type' => 'required|in:tenant,landlord',
             'phone' => 'nullable|string|max:20',
         ]);
 
-        $user = auth()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
         $user->update($validated);
 
         // Remove the session flag

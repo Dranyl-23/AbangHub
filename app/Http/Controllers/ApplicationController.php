@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
 
 class ApplicationController extends Controller
 {
@@ -16,7 +17,7 @@ class ApplicationController extends Controller
     public function tenantIndex(): View
     {
         $applications = Application::with('property.images')
-            ->where('user_id', auth()->id())
+            ->where('user_id', Auth::id())
             ->latest()
             ->get();
             
@@ -26,12 +27,12 @@ class ApplicationController extends Controller
     public function store(Request $request, Property $property): RedirectResponse
     {
         // Prevent landlord from applying to their own property
-        if (auth()->id() === $property->owner_id) {
+        if (Auth::id() === $property->owner_id) {
             return redirect()->back()->with('error', 'You cannot apply for your own property.');
         }
 
         // Prevent multiple pending applications for the same property
-        $existing = Application::where('user_id', auth()->id())
+        $existing = Application::where('user_id', Auth::id())
             ->where('property_id', $property->id)
             ->whereIn('status', ['pending', 'approved'])
             ->first();
@@ -45,15 +46,18 @@ class ApplicationController extends Controller
             'move_in_date' => 'nullable|date|after_or_equal:today',
         ]);
 
-        $validated['user_id'] = auth()->id();
+        $validated['user_id'] = Auth::id();
         $validated['property_id'] = $property->id;
         $validated['status'] = 'pending';
 
         Application::create($validated);
 
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        
         // Update user_type to tenant if they are a guest/standard user
-        if (auth()->user()->user_type === 'standard') {
-            auth()->user()->update(['user_type' => 'tenant']);
+        if ($user->user_type === 'standard') {
+            $user->update(['user_type' => 'tenant']);
         }
 
         return redirect()->route('tenant.applications.index')
@@ -63,7 +67,7 @@ class ApplicationController extends Controller
     public function updateStatus(Request $request, Application $application): RedirectResponse
     {
         // Only the property owner can update status
-        if (auth()->id() !== $application->property->owner_id) {
+        if (Auth::id() !== $application->property->owner_id) {
             abort(403);
         }
 

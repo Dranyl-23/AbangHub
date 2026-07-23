@@ -4,12 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['user_id', 'property_id', 'title', 'description', 'image_path', 'status', 'cost'])]
 class MaintenanceRequest extends Model
 {
+    protected $fillable = ['user_id', 'property_id', 'title', 'description', 'image_path', 'status', 'cost'];
+
+    protected $casts = [
+        'cost' => 'decimal:2',
+    ];
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

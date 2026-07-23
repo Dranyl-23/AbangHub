@@ -2,15 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
 
-#[Fillable(['user_id', 'property_id', 'type', 'amount', 'status', 'reference_number', 'notes'])]
 class Transaction extends Model
 {
+    protected $fillable = ['user_id', 'property_id', 'type', 'amount', 'status', 'reference_number', 'notes'];
     use HasFactory;
 
     protected function casts(): array

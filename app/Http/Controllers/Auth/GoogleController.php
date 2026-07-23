@@ -12,9 +12,15 @@ use Laravel\Socialite\Facades\Socialite;
 
 class GoogleController extends Controller
 {
-    public function redirect()
+    public function redirect(Request $request)
     {
-        return Socialite::driver('google')->redirect();
+        if ($request->has('role')) {
+            session(['google_role' => $request->role]);
+        }
+        
+        /** @var \Laravel\Socialite\Two\GoogleProvider $driver */
+        $driver = Socialite::driver('google');
+        return $driver->with(['prompt' => 'select_account'])->redirect();
     }
 
     public function callback()
@@ -34,22 +40,29 @@ class GoogleController extends Controller
                 Auth::login($user);
                 return redirect()->route('dashboard');
             } else {
+                // Get the role they selected on the register page, if any
+                $role = session('google_role');
+                
                 // Create a new user
                 $user = User::create([
                     'full_name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
                     'username' => $this->generateUniqueUsername($googleUser->getName()),
                     'google_id' => $googleUser->getId(),
-                    'user_type' => 'tenant', // Default type
+                    'user_type' => $role ?? 'tenant', // Default to tenant if no role
                     'password' => null,
                 ]);
 
                 Auth::login($user);
+                session()->forget('google_role');
                 
-                // Set a session flag for onboarding
-                session(['needs_onboarding' => true]);
+                // If they didn't come from the register page (no role selected), show onboarding
+                if (!$role) {
+                    session(['needs_onboarding' => true]);
+                    return redirect()->route('onboarding');
+                }
                 
-                return redirect()->route('onboarding');
+                return redirect()->route('dashboard');
             }
             
         } catch (\Exception $e) {
@@ -57,7 +70,7 @@ class GoogleController extends Controller
         }
     }
 
-    private function generateUniqueUsername($name)
+    private function generateUniqueUsername(string $name)
     {
         $base = Str::slug($name, '');
         if (empty($base)) {

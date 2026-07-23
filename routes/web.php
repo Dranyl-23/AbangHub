@@ -32,7 +32,18 @@ Route::get('/properties/{property}', [\App\Http\Controllers\PropertyController::
 
 // 1. Admin Only Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    // e.g. Route::get('/users', [AdminController::class, 'users'])->name('users');
+    // KYC
+    Route::patch('/kyc/{document}/approve', [\App\Http\Controllers\ComplianceController::class, 'approve'])->name('kyc.approve');
+    Route::patch('/kyc/{document}/reject', [\App\Http\Controllers\ComplianceController::class, 'reject'])->name('kyc.reject');
+
+    // Users
+    Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::patch('/users/{user}/role', [\App\Http\Controllers\Admin\UserController::class, 'updateRole'])->name('users.updateRole');
+    Route::patch('/users/{user}/ban', [\App\Http\Controllers\Admin\UserController::class, 'toggleBan'])->name('users.toggleBan');
+
+    // Properties
+    Route::get('/properties', [\App\Http\Controllers\Admin\PropertyController::class, 'index'])->name('properties.index');
+    Route::patch('/properties/{property}/ban', [\App\Http\Controllers\Admin\PropertyController::class, 'toggleBan'])->name('properties.toggleBan');
 });
 
 // 2. Landlord Only Routes
@@ -87,16 +98,19 @@ Route::middleware(['auth', 'role:admin,landlord,tenant'])->group(function () {
 
 // Authenticated routes
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::post('/properties/{property}/applications', [ApplicationController::class, 'store'])->name('applications.store');
+    Route::post('/properties/{property}/applications', [\App\Http\Controllers\ApplicationController::class, 'store'])->name('applications.store');
     
     // Reviews
     Route::post('/properties/{property}/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('properties.reviews.store');
+    Route::post('/tenants/{tenant}/reviews', [App\Http\Controllers\ReviewController::class, 'storeTenantReview'])->name('tenants.reviews.store');
     
     Route::post('/properties/{property}/favorite', [\App\Http\Controllers\PropertyController::class, 'toggleFavorite'])->name('properties.favorite');
     Route::patch('/applications/{application}/status', [\App\Http\Controllers\ApplicationController::class, 'updateStatus'])->name('applications.updateStatus');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     Route::resource('properties', PropertyController::class)->except(['show']);
+    
+    Route::get('/leases/{lease}/download', [\App\Http\Controllers\LeaseController::class, 'downloadContract'])->name('leases.download');
     
     Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');

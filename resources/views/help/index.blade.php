@@ -57,12 +57,12 @@
                     <!-- FAQ Item 1 -->
                     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden transition-all duration-300">
                         <button @click="activeAccordion = activeAccordion === 1 ? null : 1" class="w-full px-6 py-5 flex items-center justify-between focus:outline-none bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                            <h3 class="text-lg font-bold text-slate-900 dark:text-white text-left">What is RentEase?</h3>
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white text-left">What is AbangHub?</h3>
                             <svg class="w-5 h-5 text-slate-500 transform transition-transform duration-300 shrink-0" :class="{ 'rotate-180 text-rose-500': activeAccordion === 1 }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div x-show="activeAccordion === 1" x-collapse>
                             <div class="px-6 pb-5 pt-2 text-slate-600 dark:text-slate-400">
-                                RentEase is a premium property rental platform connecting verified landlords with reliable tenants. We streamline the entire process from finding a home to paying rent and requesting maintenance.
+                                AbangHub is a premium property rental platform connecting verified landlords with reliable tenants. We streamline the entire process from finding a home to paying rent and requesting maintenance.
                             </div>
                         </div>
                     </div>
@@ -129,7 +129,7 @@
                     <p class="text-slate-600 dark:text-slate-400 mb-8 max-w-lg mx-auto">
                         If you couldn't find the answer to your question in our FAQ, our support team is always ready to assist you.
                     </p>
-                    <a href="mailto:support@rentease.com" class="inline-flex items-center px-8 py-4 bg-rose-600 text-white font-bold rounded-xl shadow-lg shadow-rose-600/30 hover:bg-rose-700 hover:-translate-y-1 transition-all">
+                    <a href="mailto:support@AbangHub.com" class="inline-flex items-center px-8 py-4 bg-rose-600 text-white font-bold rounded-xl shadow-lg shadow-rose-600/30 hover:bg-rose-700 hover:-translate-y-1 transition-all">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         Contact Support
                     </a>
@@ -139,3 +139,4 @@
         </div>
     </div>
 </x-app-layout>
+
