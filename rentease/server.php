@@ -9,8 +9,6 @@ $_ENV['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
 $_SERVER['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
 $_ENV['LOG_CHANNEL'] = 'stderr';
 $_SERVER['LOG_CHANNEL'] = 'stderr';
-$_ENV['APP_DEBUG'] = 'true';
-$_SERVER['APP_DEBUG'] = 'true';
 $_ENV['SESSION_DRIVER'] = 'cookie';
 $_SERVER['SESSION_DRIVER'] = 'cookie';
 
