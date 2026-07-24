@@ -9,12 +9,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Laravel\Sanctum\HasApiTokens;
+
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
-    protected $fillable = ['username', 'email', 'password', 'full_name', 'phone', 'user_type', 'profile_image', 'google_id', 'is_verified', 'is_banned'];
+    protected $fillable = ['username', 'email', 'password', 'full_name', 'phone', 'user_type', 'profile_image', 'google_id', 'is_verified', 'is_banned', 'id_picture', 'emergency_contact_name', 'emergency_contact_phone'];
 
     protected $hidden = ['password', 'remember_token'];
 

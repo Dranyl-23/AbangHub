@@ -51,6 +51,11 @@ class Property extends Model
         return $this->hasMany(PropertyImage::class);
     }
 
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
     public function primaryImage(): HasOne
     {
         return $this->hasOne(PropertyImage::class)->where('is_primary', true);
