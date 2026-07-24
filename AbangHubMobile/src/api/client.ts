@@ -3,8 +3,8 @@ import * as SecureStore from 'expo-secure-store';
 import { router } from 'expo-router';
 
 // NOTE: For Android Emulator, use 10.0.2.2 instead of localhost.
-// Changed to your actual local IP so your physical phone can connect to the PC!
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.100.14:8000/api';
+// Set EXPO_PUBLIC_API_URL in your .env file. Production: https://abanghub.vercel.app/api
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
