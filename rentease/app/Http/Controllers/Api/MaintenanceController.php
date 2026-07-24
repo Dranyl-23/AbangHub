@@ -18,11 +18,11 @@ class MaintenanceController extends Controller
         
         if ($user->user_type === 'tenant') {
             $requests = MaintenanceRequest::with('property')
-                ->where('tenant_id', $user->id)
+                ->where('user_id', $user->id)
                 ->latest()
                 ->get();
         } else {
-            $requests = MaintenanceRequest::with(['property', 'tenant'])
+            $requests = MaintenanceRequest::with(['property', 'user'])
                 ->whereHas('property', function($q) use ($user) {
                     $q->where('owner_id', $user->id);
                 })
@@ -42,7 +42,6 @@ class MaintenanceController extends Controller
             'property_id' => 'required|exists:properties,id',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'urgency' => 'required|in:low,medium,high,emergency',
             'image' => 'nullable|image|max:5120', // Up to 5MB image
         ]);
 
@@ -59,19 +58,51 @@ class MaintenanceController extends Controller
 
         $maintenanceRequest = MaintenanceRequest::create([
             'property_id' => $request->property_id,
-            'tenant_id' => $user->id,
+            'user_id' => $user->id,
             'title' => $request->title,
             'description' => $request->description,
-            'urgency' => $request->urgency,
+            'image_path' => $imagePath,
             'status' => 'pending',
-            // If there's an image column in the migration we'd save it here.
-            // Currently assuming standard schema. To save the path, we might need a migration if it doesn't exist, 
-            // but we'll include it in the upload logic anyway.
         ]);
 
         return response()->json([
             'message' => 'Maintenance request submitted successfully.',
             'maintenance_request' => new MaintenanceRequestResource($maintenanceRequest)
         ], 201);
+    }
+
+    /**
+     * Update the specified maintenance request (Landlord only).
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,in_progress,resolved',
+            'cost' => 'nullable|numeric|min:0'
+        ]);
+
+        $maintenanceRequest = MaintenanceRequest::with('property')->findOrFail($id);
+
+        if ($maintenanceRequest->property->owner_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized. Only the property landlord can update this request.'], 403);
+        }
+
+        $updateData = ['status' => $request->status];
+        
+        if ($request->status === 'resolved' && $request->has('cost')) {
+            $updateData['cost'] = $request->cost;
+        }
+
+        if ($request->hasFile('receipt_image')) {
+            $path = $request->file('receipt_image')->store('maintenance/receipts', 'public');
+            $updateData['receipt_image_path'] = $path;
+        }
+
+        $maintenanceRequest->update($updateData);
+
+        return response()->json([
+            'message' => 'Maintenance request status updated.',
+            'maintenance_request' => new MaintenanceRequestResource($maintenanceRequest)
+        ]);
     }
 }

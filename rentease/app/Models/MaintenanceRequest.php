@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MaintenanceRequest extends Model
 {
-    protected $fillable = ['user_id', 'property_id', 'title', 'description', 'image_path', 'status', 'cost'];
+    protected $fillable = ['user_id', 'property_id', 'title', 'description', 'image_path', 'receipt_image_path', 'status', 'cost'];
 
     protected $casts = [
         'cost' => 'decimal:2',

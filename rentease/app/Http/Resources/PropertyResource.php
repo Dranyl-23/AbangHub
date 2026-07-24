@@ -16,11 +16,19 @@ class PropertyResource extends JsonResource
     {
         $data = parent::toArray($request);
         
-        if (auth('sanctum')->check()) {
-            $data['is_saved'] = $this->favorites()->where('user_id', auth('sanctum')->id())->exists();
+        if (isset($this->is_saved)) {
+            $data['is_saved'] = (bool) $this->is_saved;
         } else {
-            $data['is_saved'] = false;
+            // Fallback for single queries where we didn't use withExists
+            if (auth('sanctum')->check()) {
+                $data['is_saved'] = $this->favorites()->where('user_id', auth('sanctum')->id())->exists();
+            } else {
+                $data['is_saved'] = false;
+            }
         }
+        
+        $data['average_rating'] = $this->average_rating;
+        $data['review_count'] = $this->review_count;
 
         return $data;
     }

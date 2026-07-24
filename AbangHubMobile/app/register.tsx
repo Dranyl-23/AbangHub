@@ -59,6 +59,24 @@ export default function RegisterScreen() {
       <Text style={styles.subtitle}>Join AbangHub today</Text>
 
       <View style={styles.inputContainer}>
+        <Text style={styles.label}>I want to:</Text>
+        <View style={styles.roleSelector}>
+          <TouchableOpacity 
+            style={[styles.roleButton, userType === 'tenant' && styles.roleButtonActive]} 
+            onPress={() => setUserType('tenant')}
+          >
+            <Ionicons name="person" size={20} color={userType === 'tenant' ? '#fff' : '#64748b'} />
+            <Text style={[styles.roleButtonText, userType === 'tenant' && styles.roleButtonTextActive]}>Tenant</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.roleButton, userType === 'landlord' && styles.roleButtonActive]} 
+            onPress={() => setUserType('landlord')}
+          >
+            <Ionicons name="home" size={20} color={userType === 'landlord' ? '#fff' : '#64748b'} />
+            <Text style={[styles.roleButtonText, userType === 'landlord' && styles.roleButtonTextActive]}>Landlord</Text>
+          </TouchableOpacity>
+        </View>
+
         <TextInput
           style={styles.input}
           placeholder="Full Name"
@@ -98,21 +116,7 @@ export default function RegisterScreen() {
             <Ionicons name={showConfirmPassword ? "eye-off" : "eye"} size={24} color="#94a3b8" />
           </TouchableOpacity>
         </View>
-        <Text style={styles.label}>I want to:</Text>
-        <View style={styles.typeContainer}>
-          <TouchableOpacity 
-            style={[styles.typeButton, userType === 'tenant' && styles.typeButtonActive]}
-            onPress={() => setUserType('tenant')}
-          >
-            <Text style={[styles.typeText, userType === 'tenant' && styles.typeTextActive]}>Rent a Home</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.typeButton, userType === 'landlord' && styles.typeButtonActive]}
-            onPress={() => setUserType('landlord')}
-          >
-            <Text style={[styles.typeText, userType === 'landlord' && styles.typeTextActive]}>List a Property</Text>
-          </TouchableOpacity>
-        </View>
+
       </View>
 
       <TouchableOpacity 
@@ -158,6 +162,35 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginBottom: 24,
   },
+  roleSelector: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 20,
+  },
+  roleButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    backgroundColor: '#ffffff',
+    gap: 8,
+  },
+  roleButtonActive: {
+    backgroundColor: '#e11d48',
+    borderColor: '#e11d48',
+  },
+  roleButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#64748b',
+  },
+  roleButtonTextActive: {
+    color: '#ffffff',
+  },
   input: {
     backgroundColor: '#ffffff',
     borderWidth: 1,
@@ -191,32 +224,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     marginTop: 8,
   },
-  typeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  typeButton: {
-    flex: 1,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    borderRadius: 12,
-    alignItems: 'center',
-    marginHorizontal: 4,
-    backgroundColor: '#ffffff',
-  },
-  typeButtonActive: {
-    borderColor: '#e11d48',
-    backgroundColor: '#fff1f2', // rose-50
-  },
-  typeText: {
-    color: '#64748b',
-    fontWeight: '600',
-  },
-  typeTextActive: {
-    color: '#e11d48',
-  },
+
   button: {
     backgroundColor: '#e11d48',
     padding: 16,

@@ -34,7 +34,7 @@
                         <div class="bg-white dark:bg-slate-800 rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow group flex flex-col">
                             @if($request->image_path)
                                 <div class="h-48 overflow-hidden relative">
-                                    <img src="{{ Storage::url($request->image_path) }}" alt="{{ $request->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <img src="{{ asset($request->image_path) }}" alt="{{ $request->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                 </div>
                             @else
                                 <div class="h-32 bg-slate-100 dark:bg-slate-700 flex items-center justify-center">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, RefreshControl, Image, ImageBackground, StatusBar, TextInput, ScrollView } from 'react-native';
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, Redirect } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
@@ -71,32 +71,7 @@ export default function Home() {
   }
 
   if (!isLoggedIn) {
-    return (
-      <ImageBackground 
-        source={require('../../assets/images/landing-bg.jpg')} 
-        style={styles.landingBackground}
-      >
-        <StatusBar barStyle="light-content" />
-        <LinearGradient
-          colors={['transparent', 'rgba(15, 23, 42, 0.8)', 'rgba(15, 23, 42, 1)']}
-          locations={[0, 0.5, 1]}
-          style={styles.overlay}
-        >
-          <View style={styles.landingContent}>
-            <View style={styles.brandingContainer}>
-              <View style={styles.logoWrapper}>
-                <Image source={require('../../assets/images/logo.jpg')} style={styles.landingLogo} />
-              </View>
-              <Text style={styles.landingTitle}>AbangHub</Text>
-              <Text style={styles.landingSubtitle}>Find your perfect home today</Text>
-            </View>
-            <TouchableOpacity style={styles.landingButton} onPress={() => router.push('/login' as any)}>
-              <Text style={styles.landingButtonText}>Get Started</Text>
-            </TouchableOpacity>
-          </View>
-        </LinearGradient>
-      </ImageBackground>
-    );
+    return <Redirect href="/landing" />;
   }
 
   const toggleSaveProperty = async (id: number) => {
@@ -156,8 +131,10 @@ export default function Home() {
           </View>
 
           <View style={styles.locationContainer}>
-            <Ionicons name="location" size={16} color="#64748b" />
-            <Text style={styles.locationText} numberOfLines={1}>{item.city}</Text>
+            <Ionicons name="location-sharp" size={16} color="#64748b" />
+            <Text style={styles.locationText} numberOfLines={1}>
+              {item.address ? `${item.address}, ` : ''}{item.barangay ? `${item.barangay}, ` : ''}{item.city}
+            </Text>
           </View>
           
           <View style={styles.quickInfoRow}>
@@ -179,7 +156,7 @@ export default function Home() {
     <View style={[styles.container, isDarkMode && styles.containerDark]}>
       <View style={[styles.header, isDarkMode && styles.headerDark]}>
         <View>
-          <Text style={[styles.greeting, isDarkMode && styles.textDark]}>Hello, {user?.full_name || user?.first_name}</Text>
+          <Text style={[styles.greeting, isDarkMode && styles.textDark]}>Hello, {user?.full_name || user?.username}</Text>
           <Text style={[styles.headerTitle, isDarkMode && styles.textDark]}>Available Properties</Text>
         </View>
       </View>

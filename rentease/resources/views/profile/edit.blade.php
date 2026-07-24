@@ -14,7 +14,7 @@
                     <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 text-center sticky top-8">
                         <div class="relative inline-block mb-4 group cursor-pointer" onclick="document.getElementById('profile_image_input').click()">
                             @if($user->profile_image)
-                                <img src="{{ Storage::url($user->profile_image) }}" class="w-32 h-32 rounded-full object-cover border-4 border-white dark:border-slate-800 shadow-lg group-hover:opacity-75 transition-opacity">
+                                <img src="{{ $user->avatar_url }}" class="w-32 h-32 rounded-full object-cover border-4 border-white dark:border-slate-800 shadow-lg group-hover:opacity-75 transition-opacity">
                             @else
                                 <img src="https://ui-avatars.com/api/?name={{ urlencode($user->full_name) }}&background=f43f5e&color=fff&size=256" class="w-32 h-32 rounded-full object-cover border-4 border-white dark:border-slate-800 shadow-lg group-hover:opacity-75 transition-opacity">
                             @endif

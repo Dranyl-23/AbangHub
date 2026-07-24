@@ -18,18 +18,31 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/properties', [\App\Http\Controllers\Api\PropertyController::class, 'index']);
     Route::post('/properties', [\App\Http\Controllers\Api\PropertyController::class, 'store']);
     Route::get('/properties/{id}', [\App\Http\Controllers\Api\PropertyController::class, 'show']);
+    Route::put('/properties/{id}', [\App\Http\Controllers\Api\PropertyController::class, 'update']);
+    Route::delete('/properties/{id}', [\App\Http\Controllers\Api\PropertyController::class, 'destroy']);
+    Route::get('/landlord/properties', [\App\Http\Controllers\Api\PropertyController::class, 'landlordIndex']);
+    // Dashboard API
+    Route::get('/landlord/dashboard', [\App\Http\Controllers\Api\DashboardController::class, 'index']);
+
+    // Leases & Invoices API
+    Route::get('/landlord/leases', [\App\Http\Controllers\Api\LeaseController::class, 'index']);
+    Route::get('/landlord/invoices', [\App\Http\Controllers\Api\InvoiceController::class, 'index']);
+    Route::post('/landlord/invoices', [\App\Http\Controllers\Api\InvoiceController::class, 'store']);
+    Route::put('/landlord/invoices/{id}/status', [\App\Http\Controllers\Api\InvoiceController::class, 'update']);
 
     // Applications API
     Route::get('/applications', [\App\Http\Controllers\Api\ApplicationController::class, 'index']);
     Route::post('/properties/{id}/apply', [\App\Http\Controllers\Api\ApplicationController::class, 'store']);
+    Route::put('/applications/{id}', [\App\Http\Controllers\Api\ApplicationController::class, 'update']);
 
     // Favorites / Saved Properties API
     Route::get('/favorites', [\App\Http\Controllers\Api\FavoriteController::class, 'index']);
     Route::post('/favorites/{id}', [\App\Http\Controllers\Api\FavoriteController::class, 'toggle']);
 
     // Maintenance API
-    Route::get('/maintenance', [\App\Http\Controllers\Api\MaintenanceController::class, 'index']);
-    Route::post('/maintenance', [\App\Http\Controllers\Api\MaintenanceController::class, 'store']);
+    Route::get('/maintenance-requests', [\App\Http\Controllers\Api\MaintenanceController::class, 'index']);
+    Route::post('/maintenance-requests', [\App\Http\Controllers\Api\MaintenanceController::class, 'store']);
+    Route::put('/maintenance-requests/{id}', [\App\Http\Controllers\Api\MaintenanceController::class, 'update']);
 
     // Wallet API
     Route::get('/wallet', [\App\Http\Controllers\Api\WalletController::class, 'balance']);
@@ -40,4 +53,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profile/avatar', [\App\Http\Controllers\Api\ProfileController::class, 'uploadAvatar']);
     Route::post('/profile/id', [\App\Http\Controllers\Api\ProfileController::class, 'uploadId']);
     Route::put('/profile/password', [\App\Http\Controllers\Api\ProfileController::class, 'changePassword']);
+
+    // Tenant Specific API
+    Route::get('/tenant/dashboard', [\App\Http\Controllers\Api\TenantDashboardController::class, 'index']);
+    Route::post('/reviews', [\App\Http\Controllers\Api\ReviewController::class, 'store']);
+
+    // Messages API
+    Route::get('/messages', [\App\Http\Controllers\Api\MessageController::class, 'index']);
+    Route::get('/messages/unread-count', [\App\Http\Controllers\Api\MessageController::class, 'unreadCount']);
+    Route::get('/messages/{userId}/{propertyId}', [\App\Http\Controllers\Api\MessageController::class, 'show']);
+    Route::post('/messages', [\App\Http\Controllers\Api\MessageController::class, 'store']);
+
+    // Expenses API
+    Route::get('/expenses', [\App\Http\Controllers\Api\ExpenseController::class, 'index']);
+    Route::post('/expenses', [\App\Http\Controllers\Api\ExpenseController::class, 'store']);
+
+    // Notifications API
+    Route::get('/notifications', [\App\Http\Controllers\Api\NotificationController::class, 'index']);
+    Route::put('/notifications/mark-all-read', [\App\Http\Controllers\Api\NotificationController::class, 'markAllAsRead']);
+    Route::put('/notifications/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markAsRead']);
 });

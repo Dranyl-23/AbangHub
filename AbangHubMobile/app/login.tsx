@@ -6,6 +6,7 @@ import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { Ionicons } from '@expo/vector-icons';
 import apiClient from '../src/api/client';
+import { useAuth } from '../src/context/AuthContext';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -17,9 +18,11 @@ export default function LoginScreen() {
 
   // Google Auth Setup
   const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: '29834421318-caterfnmou8ksrd72t0fga1ves2ad7us.apps.googleusercontent.com', // Web Client ID from your .env
-    webClientId: '29834421318-caterfnmou8ksrd72t0fga1ves2ad7us.apps.googleusercontent.com', // Essential for Expo Go
+    clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
   });
+
+  const { login } = useAuth();
 
   useEffect(() => {
     if (response?.type === 'success') {
@@ -49,12 +52,10 @@ export default function LoginScreen() {
 
       const { token, user } = apiResponse.data;
       
-      // 3. Save token securely and redirect
-      await SecureStore.setItemAsync('userToken', token);
-      await SecureStore.setItemAsync('userData', JSON.stringify(user));
+      // 3. Save token securely and redirect via AuthContext
+      await login(token, user);
       
       Alert.alert('Success', 'Logged in via Google!');
-      router.replace('/' as any);
     } catch (error) {
       console.error(error);
       Alert.alert('Error', 'Google login failed.');
@@ -75,11 +76,8 @@ export default function LoginScreen() {
       
       const { token, user } = response.data;
       
-      await SecureStore.setItemAsync('userToken', token);
-      await SecureStore.setItemAsync('userData', JSON.stringify(user));
-      
+      await login(token, user);
       Alert.alert('Success', 'Logged in successfully!');
-      router.push('/' as any); 
     } catch (error: any) {
       const message = error.response?.data?.message || 'Login failed.';
       Alert.alert('Login Error', message);

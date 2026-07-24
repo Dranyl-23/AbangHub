@@ -14,6 +14,17 @@ class MaintenanceRequestResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'description' => $this->description,
+            'urgency' => $this->urgency,
+            'status' => $this->status,
+            'image' => $this->image,
+            'cost' => $this->cost,
+            'user' => new UserResource($this->whenLoaded('user')),
+            'property' => new PropertyResource($this->whenLoaded('property')),
+            'created_at' => $this->created_at?->toIso8601String(),
+        ];
     }
 }

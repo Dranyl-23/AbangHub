@@ -103,7 +103,8 @@ export default function ProfileScreen() {
     if (!path) return null;
     if (path.startsWith('http')) return path;
     const baseURL = apiClient.defaults.baseURL?.replace('/api', '');
-    return `${baseURL}${path}`;
+    const formattedPath = path.startsWith('/') ? path : `/storage/${path}`;
+    return `${baseURL}${formattedPath}`;
   };
 
   const avatarUrl = getAvatarUrl(user?.profile_image);
@@ -130,7 +131,7 @@ export default function ProfileScreen() {
         </TouchableOpacity>
 
         <Text style={[styles.name, isDarkMode && styles.textDark]}>
-          {user?.full_name || user?.first_name || 'Tenant'}
+          {user?.full_name || user?.username || (user?.user_type === 'landlord' ? 'Landlord' : 'Tenant')}
         </Text>
         
         {/* Verification Status */}
@@ -168,6 +169,11 @@ export default function ProfileScreen() {
         <View style={[styles.sectionHeader, isDarkMode && styles.sectionHeaderDark]}>
           <Text style={[styles.sectionHeaderText, isDarkMode && styles.sectionHeaderTextDark]}>About & Support</Text>
         </View>
+        <TouchableOpacity style={[styles.menuItem, isDarkMode && styles.menuItemDark]} onPress={() => router.push('/(tenant)/wallet' as any)}>
+          <View style={[styles.menuIconContainer, isDarkMode && styles.menuIconContainerDark]}><Ionicons name="wallet-outline" size={22} color={isDarkMode ? "#cbd5e1" : "#475569"} /></View>
+          <Text style={[styles.menuText, isDarkMode && styles.textDark]}>My Wallet</Text>
+          <Ionicons name="chevron-forward" size={20} color="#cbd5e1" />
+        </TouchableOpacity>
         <TouchableOpacity style={[styles.menuItem, isDarkMode && styles.menuItemDark]} onPress={() => router.push('/(tenant)/help' as any)}>
           <View style={[styles.menuIconContainer, isDarkMode && styles.menuIconContainerDark]}><Ionicons name="help-circle-outline" size={22} color={isDarkMode ? "#cbd5e1" : "#475569"} /></View>
           <Text style={[styles.menuText, isDarkMode && styles.textDark]}>Help & Support</Text>

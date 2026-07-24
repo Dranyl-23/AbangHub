@@ -40,7 +40,7 @@
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-12 w-16 bg-slate-200 dark:bg-slate-700 rounded-md overflow-hidden">
                                             @if($property->images->count() > 0)
-                                                <img class="h-full w-full object-cover" src="{{ Storage::url($property->images->first()->image_path) }}" alt="">
+                                                <img class="h-full w-full object-cover" src="{{ asset($property->images->first()->image_path) }}" alt="">
                                             @else
                                                 <img class="h-full w-full object-cover" src="https://picsum.photos/seed/{{ $property->id }}/100/75" alt="">
                                             @endif

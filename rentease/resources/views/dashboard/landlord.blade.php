@@ -186,7 +186,7 @@
                                             <div class="flex items-center gap-4">
                                                 <div class="w-12 h-12 shrink-0 rounded-full overflow-hidden bg-slate-200">
                                                     @if($lease->tenant->profile_image)
-                                                        <img src="{{ Storage::url($lease->tenant->profile_image) }}" class="w-full h-full object-cover">
+                                                        <img src="{{ $lease->tenant->avatar_url }}" class="w-full h-full object-cover">
                                                     @else
                                                         <img src="https://ui-avatars.com/api/?name={{ urlencode($lease->tenant->full_name) }}&background=e2e8f0&color=0f172a" class="w-full h-full object-cover">
                                                     @endif

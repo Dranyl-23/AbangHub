@@ -29,7 +29,7 @@
                                 <a href="{{ route('messages.show', $otherUser->id) }}" class="flex items-center p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors {{ $isUnread ? 'bg-rose-50/50 dark:bg-rose-900/10' : '' }}">
                                     <div class="relative flex-shrink-0">
                                         @if($otherUser->profile_image)
-                                            <img src="{{ Storage::url($otherUser->profile_image) }}" alt="{{ $otherUser->full_name ?? $otherUser->username }}" class="w-14 h-14 rounded-full object-cover border border-slate-200 dark:border-slate-700">
+                                            <img src="{{ $otherUser->avatar_url }}" alt="{{ $otherUser->full_name ?? $otherUser->username }}" class="w-14 h-14 rounded-full object-cover border border-slate-200 dark:border-slate-700">
                                         @else
                                             <img src="https://ui-avatars.com/api/?name={{ urlencode($otherUser->full_name ?? $otherUser->username) }}&background=f43f5e&color=fff" alt="{{ $otherUser->full_name ?? $otherUser->username }}" class="w-14 h-14 rounded-full object-cover">
                                         @endif

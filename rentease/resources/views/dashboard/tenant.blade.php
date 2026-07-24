@@ -37,7 +37,7 @@
             <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm flex flex-col md:flex-row">
                 <div class="w-full md:w-1/3 aspect-[4/3] md:aspect-auto relative bg-slate-200 dark:bg-slate-900">
                     @if($activeLease->property->images->count() > 0)
-                        <img src="{{ Storage::url($activeLease->property->images->first()->image_path) }}" alt="Property" class="w-full h-full object-cover">
+                        <img src="{{ asset($activeLease->property->images->first()->image_path) }}" alt="Property" class="w-full h-full object-cover">
                     @else
                         <img src="https://picsum.photos/seed/{{ $activeLease->property_id }}/800/600" alt="Property" class="w-full h-full object-cover">
                     @endif
@@ -139,7 +139,7 @@
                                         <!-- Image -->
                                         <div class="relative aspect-[4/3] overflow-hidden rounded-2xl bg-slate-200 dark:bg-slate-800 mb-3">
                                             @if($property->images->count() > 0)
-                                                <img src="{{ Storage::url($property->images->first()->image_path) }}" alt="{{ $property->title }}" class="w-full h-full object-cover">
+                                                <img src="{{ asset($property->images->first()->image_path) }}" alt="{{ $property->title }}" class="w-full h-full object-cover">
                                             @else
                                                 <img src="https://picsum.photos/seed/{{ $property->id }}/800/600" alt="{{ $property->title }}" class="w-full h-full object-cover">
                                             @endif
@@ -183,6 +183,47 @@
                         @endif
                     </div>
 
+                    <!-- Recommended Properties (Explore) -->
+                    <div class="mb-12">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-2xl font-semibold tracking-tight">Recommended for You</h2>
+                            <a href="{{ route('properties.index') }}" class="text-sm font-medium text-rose-600 hover:text-rose-700">See all</a>
+                        </div>
+                        
+                        @if(isset($recommendedProperties) && $recommendedProperties->count() > 0)
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                @foreach($recommendedProperties as $property)
+                                    <a href="{{ route('properties.show', $property) }}" class="block group cursor-pointer">
+                                        <div class="relative aspect-[4/3] overflow-hidden rounded-2xl bg-slate-200 dark:bg-slate-800 mb-3">
+                                            @if($property->images->count() > 0)
+                                                <img src="{{ asset($property->images->first()->image_path) }}" alt="{{ $property->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                            @else
+                                                <img src="https://picsum.photos/seed/{{ $property->id }}/800/600" alt="{{ $property->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                            @endif
+                                            <div class="absolute top-3 left-3 bg-white/95 backdrop-blur-sm dark:bg-slate-900/95 px-2.5 py-1 rounded-full text-[13px] font-semibold shadow-sm">
+                                                {{ str_replace('_', ' ', ucfirst($property->property_type)) }}
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-between items-start">
+                                            <div class="pr-2 flex-1 min-w-0">
+                                                <h3 class="text-[15px] font-semibold truncate">{{ $property->city }}</h3>
+                                                <p class="text-[15px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">{{ $property->title }}</p>
+                                                <div class="mt-1.5 flex items-baseline gap-1">
+                                                    <span class="text-[15px] font-semibold text-slate-900 dark:text-white">₱{{ number_format($property->monthly_rent, 0) }}</span>
+                                                    <span class="text-[15px] text-slate-500 dark:text-slate-400">/ month</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="py-12 text-center text-slate-500 dark:text-slate-400 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl">
+                                No recommendations available right now.
+                            </div>
+                        @endif
+                    </div>
+
                     <!-- Application Tracker -->
                     <div class="mb-12">
                         <h2 class="text-2xl font-semibold tracking-tight mb-6">Application Tracker</h2>
@@ -193,7 +234,7 @@
                                     <li class="p-5 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors">
                                         <div class="w-20 h-16 shrink-0 rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-900">
                                             @if($app->property->images->count() > 0)
-                                                <img src="{{ Storage::url($app->property->images->first()->image_path) }}" class="w-full h-full object-cover">
+                                                <img src="{{ asset($app->property->images->first()->image_path) }}" class="w-full h-full object-cover">
                                             @else
                                                 <img src="https://picsum.photos/seed/{{ $app->property->id }}/200/150" class="w-full h-full object-cover">
                                             @endif

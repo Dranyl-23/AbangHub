@@ -19,12 +19,12 @@ class ApplicationController extends Controller
         
         if ($user->user_type === 'tenant') {
             $applications = Application::with(['property.primaryImage', 'property.owner'])
-                ->where('tenant_id', $user->id)
+                ->where('user_id', $user->id)
                 ->latest()
                 ->get();
         } else {
             // If landlord, list applications for their properties
-            $applications = Application::with(['property', 'tenant'])
+            $applications = Application::with(['property.primaryImage', 'user'])
                 ->whereHas('property', function ($query) use ($user) {
                     $query->where('owner_id', $user->id);
                 })
@@ -55,7 +55,7 @@ class ApplicationController extends Controller
 
         // Check if already applied
         $existing = Application::where('property_id', $property->id)
-            ->where('tenant_id', $user->id)
+            ->where('user_id', $user->id)
             ->whereIn('status', ['pending', 'approved'])
             ->first();
 
@@ -64,17 +64,63 @@ class ApplicationController extends Controller
         }
 
         $application = Application::create([
+            'user_id' => $user->id,
             'property_id' => $property->id,
-            'tenant_id' => $user->id,
             'message' => $request->message,
-            'status' => 'pending',
-            // Ideally we'd store move_in_date and occupants too if the migration supports it, 
-            // assuming the basic application schema for now.
+            'move_in_date' => $request->move_in_date,
+            'occupants' => $request->occupants,
+            'status' => 'pending'
         ]);
 
         return response()->json([
             'message' => 'Application submitted successfully!',
             'application' => new ApplicationResource($application)
         ], 201);
+    }
+
+    /**
+     * Update the application status (approve/reject).
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:approved,rejected',
+        ]);
+
+        $application = Application::findOrFail($id);
+        $user = $request->user();
+
+        // Check if the user is the landlord of the property
+        if ($user->user_type !== 'landlord' || $application->property->owner_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
+
+        $application->update([
+            'status' => $request->status
+        ]);
+
+        if ($request->status === 'approved') {
+            // Auto-create lease
+            \App\Models\Lease::firstOrCreate(
+                [
+                    'tenant_id' => $application->user_id,
+                    'property_id' => $application->property_id,
+                ],
+                [
+                    'start_date' => now()->toDateString(),
+                    'end_date' => now()->addYear()->toDateString(),
+                    'monthly_rent' => $application->property->monthly_rent,
+                    'status' => 'active'
+                ]
+            );
+            
+            // Optionally, update property status to rented
+            $application->property->update(['status' => 'rented']);
+        }
+
+        return response()->json([
+            'message' => 'Application status updated.',
+            'application' => new ApplicationResource($application)
+        ]);
     }
 }

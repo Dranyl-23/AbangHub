@@ -20,6 +20,8 @@ class User extends Authenticatable
 
     protected $hidden = ['password', 'remember_token'];
 
+    protected $appends = ['avatar_url'];
+
     /**
      * Get the attributes that should be cast.
      *
@@ -98,6 +100,23 @@ class User extends Authenticatable
     public function tenantReviewsGiven(): HasMany
     {
         return $this->hasMany(TenantReview::class, 'landlord_id');
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (!$this->profile_image) {
+            return null;
+        }
+
+        if (str_starts_with($this->profile_image, 'http')) {
+            return $this->profile_image;
+        }
+
+        if (str_starts_with($this->profile_image, '/storage/')) {
+            return asset($this->profile_image);
+        }
+
+        return \Illuminate\Support\Facades\Storage::url($this->profile_image);
     }
 
     public function tenantReviewsReceived(): HasMany

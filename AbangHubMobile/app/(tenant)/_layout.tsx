@@ -1,9 +1,27 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../src/context/ThemeContext';
+import React, { useState, useEffect } from 'react';
+import apiClient from '../../src/api/client';
 
 export default function TenantLayout() {
   const { isDarkMode } = useTheme();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const response = await apiClient.get('/messages/unread-count');
+        setUnreadCount(response.data.unread_count);
+      } catch (error) {
+        // Silently ignore errors for background polling
+      }
+    };
+
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 10000); // Poll every 10 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Tabs
@@ -30,6 +48,15 @@ export default function TenantLayout() {
       }}
     >
       <Tabs.Screen
+        name="my-home"
+        options={{
+          title: 'My Home',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="explore"
         options={{
           title: 'Explore',
@@ -41,18 +68,25 @@ export default function TenantLayout() {
       <Tabs.Screen
         name="saved"
         options={{
+          href: null,
           title: 'Saved',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="heart-outline" size={size} color={color} />
-          ),
         }}
       />
       <Tabs.Screen
         name="applications"
         options={{
+          href: null,
           title: 'Applications',
+        }}
+      />
+      <Tabs.Screen
+        name="messages"
+        options={{
+          title: 'Messages',
+          tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
+          tabBarBadgeStyle: { backgroundColor: '#e11d48' },
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="document-text-outline" size={size} color={color} />
+            <Ionicons name="chatbubble-ellipses-outline" size={size} color={color} />
           ),
         }}
       />
@@ -95,6 +129,34 @@ export default function TenantLayout() {
       />
       <Tabs.Screen
         name="legal"
+        options={{
+          href: null,
+          tabBarStyle: { display: 'none' },
+        }}
+      />
+      <Tabs.Screen
+        name="invoices"
+        options={{
+          href: null,
+          tabBarStyle: { display: 'none' },
+        }}
+      />
+      <Tabs.Screen
+        name="maintenance"
+        options={{
+          href: null,
+          tabBarStyle: { display: 'none' },
+        }}
+      />
+      <Tabs.Screen
+        name="wallet"
+        options={{
+          href: null,
+          tabBarStyle: { display: 'none' },
+        }}
+      />
+      <Tabs.Screen
+        name="notifications"
         options={{
           href: null,
           tabBarStyle: { display: 'none' },

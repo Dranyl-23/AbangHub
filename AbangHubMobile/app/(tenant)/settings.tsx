@@ -24,7 +24,7 @@ export default function SettingsScreen() {
       const userDataStr = await SecureStore.getItemAsync('userData');
       if (userDataStr) {
         const user: User = JSON.parse(userDataStr);
-        setFullName(user.full_name || user.first_name || '');
+        setFullName(user.full_name || user.username || '');
         setPhone(user.phone || '');
         // @ts-ignore - emergency contacts exist in DB now
         setEmergencyName(user.emergency_contact_name || '');

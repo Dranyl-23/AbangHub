@@ -30,13 +30,13 @@
                 @if($property->images->count() > 0)
                     <!-- Main Image -->
                     <div class="md:col-span-2 md:row-span-2 relative group cursor-pointer">
-                        <img src="{{ Storage::url($property->images[0]->image_path) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <img src="{{ asset($property->images[0]->image_path) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                     </div>
                     <!-- Other Images -->
                     @foreach($property->images->skip(1)->take(4) as $image)
                         <div class="hidden md:block relative group cursor-pointer overflow-hidden">
-                            <img src="{{ Storage::url($image->image_path) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            <img src="{{ asset($image->image_path) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                             <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                         </div>
                     @endforeach
@@ -190,7 +190,7 @@
                                     <div>
                                         <div class="flex items-center gap-4 mb-3">
                                             @if($review->tenant->profile_image)
-                                                <img src="{{ Storage::url($review->tenant->profile_image) }}" class="w-12 h-12 rounded-full object-cover">
+                                                <img src="{{ $review->tenant->avatar_url }}" class="w-12 h-12 rounded-full object-cover">
                                             @else
                                                 <img src="https://ui-avatars.com/api/?name={{ urlencode($review->tenant->full_name ?? $review->tenant->username) }}&background=f43f5e&color=fff" class="w-12 h-12 rounded-full object-cover">
                                             @endif
@@ -283,7 +283,7 @@
                                 <h3 class="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider mb-4">Listed By</h3>
                                 <a href="{{ route('host.show', $property->owner) }}" class="flex items-center gap-4 group cursor-pointer block">
                                     @if($property->owner->profile_image)
-                                        <img src="{{ Storage::url($property->owner->profile_image) }}" alt="{{ $property->owner->full_name }}" class="w-14 h-14 rounded-full border-2 border-white shadow-sm group-hover:scale-105 transition-transform object-cover">
+                                        <img src="{{ $property->owner->avatar_url }}" alt="{{ $property->owner->full_name }}" class="w-14 h-14 rounded-full border-2 border-white shadow-sm group-hover:scale-105 transition-transform object-cover">
                                     @else
                                         <img src="https://ui-avatars.com/api/?name={{ urlencode($property->owner->full_name) }}&background=10b981&color=fff" alt="{{ $property->owner->full_name }}" class="w-14 h-14 rounded-full border-2 border-white shadow-sm group-hover:scale-105 transition-transform">
                                     @endif

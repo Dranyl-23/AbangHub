@@ -58,7 +58,7 @@
                                     <!-- Profile Picture / Avatar -->
                                     <div class="w-7 h-7 rounded-full overflow-hidden bg-slate-200 relative">
                                         @if(Auth::user()->profile_image)
-                                            <img src="{{ Storage::url(Auth::user()->profile_image) }}" class="w-full h-full object-cover">
+                                            <img src="{{ Auth::user()->avatar_url }}" class="w-full h-full object-cover">
                                         @else
                                             <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->full_name ?? Auth::user()->username) }}&background=f43f5e&color=fff" class="w-full h-full object-cover">
                                         @endif
@@ -201,6 +201,44 @@
         <main class="flex-grow max-w-[1920px] w-full mx-auto py-6 px-4 sm:px-8 lg:px-16 xl:px-24">
             {{ $slot }}
         </main>
+
+        <!-- Flash Messages / Toasts -->
+        @if (session('success'))
+            <div x-data="{ show: true }" 
+                 x-show="show" 
+                 x-init="setTimeout(() => show = false, 3000)"
+                 x-transition:enter="transform ease-out duration-300 transition"
+                 x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+                 x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+                 x-transition:leave="transition ease-in duration-100"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed bottom-4 right-4 z-50 flex items-center bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-lg">
+                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <span class="font-medium">{{ session('success') }}</span>
+                <button @click="show = false" class="ml-4 text-emerald-100 hover:text-white">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        @endif
+        @if (session('error'))
+            <div x-data="{ show: true }" 
+                 x-show="show" 
+                 x-init="setTimeout(() => show = false, 5000)"
+                 x-transition:enter="transform ease-out duration-300 transition"
+                 x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+                 x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+                 x-transition:leave="transition ease-in duration-100"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed bottom-4 right-4 z-50 flex items-center bg-rose-500 text-white px-6 py-3 rounded-xl shadow-lg">
+                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <span class="font-medium">{{ session('error') }}</span>
+                <button @click="show = false" class="ml-4 text-rose-100 hover:text-white">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        @endif
         
         <footer class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 mt-auto">
             <div class="max-w-[1920px] mx-auto py-4 px-4 sm:px-8 lg:px-16 xl:px-24 flex items-center justify-between">

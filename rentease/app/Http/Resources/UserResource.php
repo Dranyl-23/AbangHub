@@ -16,9 +16,15 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'full_name' => $this->full_name,
+            'username' => $this->username,
             'email' => $this->email,
             'user_type' => $this->user_type,
+            'phone' => $this->phone,
+            'id_picture' => $this->id_picture,
+            'emergency_contact_name' => $this->emergency_contact_name,
+            'emergency_contact_phone' => $this->emergency_contact_phone,
+            'profile_image' => $this->profile_image,
             'is_verified' => (bool) $this->is_verified,
             'is_banned' => (bool) $this->is_banned,
             'created_at' => $this->created_at?->toIso8601String(),

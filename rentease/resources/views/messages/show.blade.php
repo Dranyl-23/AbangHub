@@ -9,7 +9,7 @@
                 </a>
                 <div class="relative">
                     @if($user->profile_image)
-                        <img src="{{ Storage::url($user->profile_image) }}" alt="{{ $user->full_name ?? $user->username }}" class="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700">
+                        <img src="{{ $user->avatar_url }}" alt="{{ $user->full_name ?? $user->username }}" class="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700">
                     @else
                         <img src="https://ui-avatars.com/api/?name={{ urlencode($user->full_name ?? $user->username) }}&background=f43f5e&color=fff" alt="{{ $user->full_name ?? $user->username }}" class="w-10 h-10 rounded-full object-cover">
                     @endif
@@ -61,7 +61,7 @@
                         @if(!$isSender)
                             <div class="flex-shrink-0 mr-3 hidden sm:block">
                                 @if($user->profile_image)
-                                    <img src="{{ Storage::url($user->profile_image) }}" class="w-8 h-8 rounded-full object-cover">
+                                    <img src="{{ $user->avatar_url }}" class="w-8 h-8 rounded-full object-cover">
                                 @else
                                     <img src="https://ui-avatars.com/api/?name={{ urlencode($user->full_name ?? $user->username) }}&background=f43f5e&color=fff" class="w-8 h-8 rounded-full">
                                 @endif
@@ -104,11 +104,12 @@
                         placeholder="Type a message..." 
                         required 
                         oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"
+                        onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); if(this.value.trim() !== '') document.getElementById('sendBtn').click(); }"
                     ></textarea>
                 </div>
                 
                 <button type="submit" class="p-3 bg-rose-600 hover:bg-rose-700 text-white rounded-full shadow-md shadow-rose-500/30 transition-all transform hover:scale-105 shrink-0 disabled:opacity-50" id="sendBtn">
-                    <svg class="w-6 h-6 translate-x-[1px] translate-y-[-1px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    <svg class="w-6 h-6 translate-x-[-1px] rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                 </button>
             </form>
         </div>

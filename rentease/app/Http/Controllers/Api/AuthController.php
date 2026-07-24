@@ -59,7 +59,8 @@ class AuthController extends Controller
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'username' => explode('@', $request->email)[0] . rand(100, 999),
+            'full_name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'user_type' => $request->user_type,
@@ -121,7 +122,8 @@ class AuthController extends Controller
         } else {
             // Register new user from Google
             $user = User::create([
-                'name' => $request->name,
+                'full_name' => $request->name,
+                'username' => 'google_' . substr($request->google_id, 0, 10) . '_' . time(),
                 'email' => $request->email,
                 'google_id' => $request->google_id,
                 'user_type' => 'tenant', // Default to tenant for mobile Google login

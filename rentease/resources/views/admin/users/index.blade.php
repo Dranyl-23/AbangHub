@@ -45,7 +45,7 @@
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10">
                                             @if($user->profile_image)
-                                                <img class="h-10 w-10 rounded-full object-cover" src="{{ Storage::url($user->profile_image) }}" alt="">
+                                                <img class="h-10 w-10 rounded-full object-cover" src="{{ $user->avatar_url }}" alt="">
                                             @else
                                                 <img class="h-10 w-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode($user->full_name ?? $user->username) }}&background=f1f5f9&color=0f172a" alt="">
                                             @endif

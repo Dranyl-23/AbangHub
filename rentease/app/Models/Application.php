@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Application extends Model
 {
-    protected $fillable = ['user_id', 'property_id', 'message', 'move_in_date', 'status'];
+    protected $fillable = ['user_id', 'property_id', 'message', 'move_in_date', 'status', 'occupants'];
 
     protected $casts = [
         'move_in_date' => 'date',

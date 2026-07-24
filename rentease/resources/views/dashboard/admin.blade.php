@@ -82,7 +82,7 @@
                                 </div>
                             </div>
                             <div class="flex gap-2 shrink-0 items-center">
-                                <a href="{{ Storage::url($doc->file_path) }}" target="_blank" class="px-4 py-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white underline text-sm font-medium">View ID</a>
+                                <a href="{{ asset($doc->file_path) }}" target="_blank" class="px-4 py-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white underline text-sm font-medium">View ID</a>
                                 <form action="{{ route('admin.kyc.approve', $doc) }}" method="POST">
                                     @csrf
                                     @method('PATCH')

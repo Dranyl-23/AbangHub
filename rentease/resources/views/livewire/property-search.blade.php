@@ -112,7 +112,7 @@
                         @endif
 
                         @if($property->images->count() > 0)
-                            <img src="{{ Storage::url($property->images->first()->image_path) }}" alt="{{ $property->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            <img src="{{ asset($property->images->first()->image_path) }}" alt="{{ $property->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                         @else
                             <img src="https://picsum.photos/seed/{{ $property->id }}/800/600" alt="{{ $property->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                         @endif

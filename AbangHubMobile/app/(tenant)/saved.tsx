@@ -81,9 +81,11 @@ export default function SavedScreen() {
             <Text style={styles.price}>₱{Number(item.monthly_rent).toLocaleString()}<Text style={styles.priceInterval}>/mo</Text></Text>
           </View>
 
-          <View style={styles.locationContainer}>
-            <Ionicons name="location" size={16} color="#64748b" />
-            <Text style={styles.locationText} numberOfLines={1}>{item.city}</Text>
+          <View style={styles.locationRow}>
+            <Ionicons name="location" size={14} color="#64748b" />
+            <Text style={styles.locationText} numberOfLines={1}>
+              {item.address ? `${item.address}, ` : ''}{item.barangay ? `${item.barangay}, ` : ''}{item.city}
+            </Text>
           </View>
           
           <View style={styles.quickInfoRow}>
