@@ -1,0 +1,1 @@
+& "C:\Users\Alfie Lynard\.config\herd\bin\php84\php.exe" artisan serve
