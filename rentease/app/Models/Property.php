@@ -22,6 +22,9 @@ class Property extends Model
     protected static function booted(): void
     {
         static::addGlobalScope('notBanned', function (Builder $builder) {
+            // Skip filter in CLI (seeders, queue jobs, artisan commands)
+            if (app()->runningInConsole()) return;
+
             // Only apply if user is not admin, or if not logged in
             if (!auth()->check() || auth()->user()->user_type !== 'admin') {
                 $builder->where('is_banned', false);
@@ -109,5 +112,15 @@ class Property extends Model
     public function scopeByCity(Builder $query, string $city): Builder
     {
         return $query->where('city', $city);
+    }
+
+    public function maintenanceRequests(): HasMany
+    {
+        return $this->hasMany(MaintenanceRequest::class);
+    }
+
+    public function leases(): HasMany
+    {
+        return $this->hasMany(Lease::class);
     }
 }

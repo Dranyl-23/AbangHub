@@ -92,9 +92,27 @@ class User extends Authenticatable
         return $this->hasMany(Lease::class, 'tenant_id');
     }
 
-    public function propertyReviews(): HasMany
+    public function applications(): HasMany
     {
-        return $this->hasMany(Review::class, 'tenant_id');
+        return $this->hasMany(Application::class);
+    }
+
+    public function maintenanceRequests(): HasMany
+    {
+        return $this->hasMany(MaintenanceRequest::class);
+    }
+
+    /**
+     * Expenses use owner_id as the foreign key (not user_id).
+     */
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(Expense::class, 'owner_id');
+    }
+
+    public function payoutRequests(): HasMany
+    {
+        return $this->hasMany(PayoutRequest::class);
     }
 
     public function tenantReviewsGiven(): HasMany
