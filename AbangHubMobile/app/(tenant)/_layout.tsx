@@ -1,27 +1,12 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../src/context/ThemeContext';
-import React, { useState, useEffect } from 'react';
-import apiClient from '../../src/api/client';
+import React from 'react';
+import { useUnreadMessages } from '../../src/hooks/useUnreadMessages';
 
 export default function TenantLayout() {
   const { isDarkMode } = useTheme();
-  const [unreadCount, setUnreadCount] = useState(0);
-
-  useEffect(() => {
-    const fetchUnreadCount = async () => {
-      try {
-        const response = await apiClient.get('/messages/unread-count');
-        setUnreadCount(response.data.unread_count);
-      } catch (error) {
-        // Silently ignore errors for background polling
-      }
-    };
-
-    fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 10000); // Poll every 10 seconds
-    return () => clearInterval(interval);
-  }, []);
+  const unreadCount = useUnreadMessages();
 
   return (
     <Tabs
