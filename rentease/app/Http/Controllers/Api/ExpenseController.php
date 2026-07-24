@@ -30,7 +30,7 @@ class ExpenseController extends Controller
         $data['owner_id'] = $request->user()->id;
 
         if ($request->hasFile('receipt_image')) {
-            $data['receipt_image_path'] = $request->file('receipt_image')->store('expenses/receipts', 'public');
+            $data['receipt_image_path'] = $request->file('receipt_image')->store('expenses/receipts');
         }
 
         $expense = Expense::create($data);

@@ -65,7 +65,7 @@ class PropertyController extends Controller
         // Handle Image Uploads
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $image) {
-                $path = $image->store('properties', 'public');
+                $path = $image->store('properties');
                 PropertyImage::create([
                     'property_id' => $property->id,
                     'image_path' => $path,
@@ -114,7 +114,7 @@ class PropertyController extends Controller
             $hasPrimary = $property->images()->where('is_primary', true)->exists();
             
             foreach ($request->file('images') as $index => $image) {
-                $path = $image->store('properties', 'public');
+                $path = $image->store('properties');
                 PropertyImage::create([
                     'property_id' => $property->id,
                     'image_path' => $path,
@@ -133,7 +133,7 @@ class PropertyController extends Controller
         
         // Delete images from storage
         foreach ($property->images as $image) {
-            Storage::disk('public')->delete($image->image_path);
+            Storage::delete($image->image_path);
         }
         
         $property->delete();

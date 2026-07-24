@@ -33,11 +33,11 @@ class ComplianceController extends Controller
         // Delete old document of the same type if exists
         $existing = $user->documents()->where('document_type', $request->document_type)->first();
         if ($existing) {
-            Storage::disk('public')->delete($existing->file_path);
+            Storage::delete($existing->file_path);
             $existing->delete();
         }
 
-        $path = $request->file('document_file')->store('compliance_docs', 'public');
+        $path = $request->file('document_file')->store('compliance_docs');
 
         $user->documents()->create([
             'document_type' => $request->document_type,

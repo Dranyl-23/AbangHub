@@ -101,9 +101,9 @@ class PropertyController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('properties', 'public');
+            $path = $request->file('image')->store('properties');
             $property->images()->create([
-                'image_path' => '/storage/' . $path,
+                'image_path' => $path,
                 'is_primary' => true,
             ]);
         }
@@ -165,9 +165,9 @@ class PropertyController extends Controller
 
         if ($request->hasFile('image')) {
             // Can optionally delete the old image here
-            $path = $request->file('image')->store('properties', 'public');
+            $path = $request->file('image')->store('properties');
             $property->images()->create([
-                'image_path' => '/storage/' . $path,
+                'image_path' => $path,
                 'is_primary' => true,
             ]);
         }

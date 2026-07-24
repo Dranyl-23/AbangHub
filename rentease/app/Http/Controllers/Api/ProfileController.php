@@ -45,11 +45,11 @@ class ProfileController extends Controller
             // Delete old avatar if exists
             if ($user->profile_image) {
                 $oldPath = str_replace('/storage/', '', $user->profile_image);
-                Storage::disk('public')->delete($oldPath);
+                Storage::delete($oldPath);
             }
 
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $user->profile_image = '/storage/' . $path;
+            $path = $request->file('avatar')->store('avatars');
+            $user->profile_image = $path;
             $user->save();
 
             return response()->json([
@@ -76,11 +76,11 @@ class ProfileController extends Controller
             // Delete old ID if exists
             if ($user->id_picture) {
                 $oldPath = str_replace('/storage/', '', $user->id_picture);
-                Storage::disk('public')->delete($oldPath);
+                Storage::delete($oldPath);
             }
 
-            $path = $request->file('id_picture')->store('identifications', 'public');
-            $user->id_picture = '/storage/' . $path;
+            $path = $request->file('id_picture')->store('identifications');
+            $user->id_picture = $path;
             
             // Mark as unverified if they upload a new ID, so admin can re-verify
             $user->is_verified = false;

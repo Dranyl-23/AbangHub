@@ -88,7 +88,7 @@ class MaintenanceRequestController extends Controller
         $maintenanceRequest->status = 'pending';
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('maintenance_images', 'public');
+            $path = $request->file('image')->store('maintenance_images');
             $maintenanceRequest->image_path = $path;
         }
 

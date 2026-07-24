@@ -102,7 +102,7 @@ class InvoiceController extends Controller
         $data = ['status' => $request->status];
 
         if ($request->hasFile('receipt_image')) {
-            $path = $request->file('receipt_image')->store('receipts', 'public');
+            $path = $request->file('receipt_image')->store('receipts');
             $data['receipt_image'] = $path;
             
             // If tenant is uploading, they might change status to 'pending_verification' or similar

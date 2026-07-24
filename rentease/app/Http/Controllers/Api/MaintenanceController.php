@@ -53,7 +53,7 @@ class MaintenanceController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('maintenance', 'public');
+            $imagePath = $request->file('image')->store('maintenance');
         }
 
         $maintenanceRequest = MaintenanceRequest::create([
@@ -94,7 +94,7 @@ class MaintenanceController extends Controller
         }
 
         if ($request->hasFile('receipt_image')) {
-            $path = $request->file('receipt_image')->store('maintenance/receipts', 'public');
+            $path = $request->file('receipt_image')->store('maintenance/receipts');
             $updateData['receipt_image_path'] = $path;
         }
 
