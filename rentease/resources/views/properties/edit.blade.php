@@ -15,7 +15,7 @@
             </div>
 
             <div class="bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 rounded-3xl overflow-hidden">
-                <form action="{{ route('properties.update', $property') }}" method="POST" enctype="multipart/form-data" class="p-8">
+                <form action="{{ route('properties.update', $property) }}" method="POST" enctype="multipart/form-data" class="p-8">
                     @csrf
                     @method('PUT')
                     

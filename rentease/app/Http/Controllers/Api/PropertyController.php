@@ -139,7 +139,7 @@ class PropertyController extends Controller
             'city' => 'sometimes|required|string|max:255',
             'barangay' => 'sometimes|required|string|max:255',
             'address' => 'sometimes|required|string',
-            'property_type' => 'sometimes|required|string|in:apartment,house,room,studio',
+            'property_type' => 'sometimes|required|string|in:apartment,house,condo,room,boarding_house,studio',
             'bedrooms' => 'sometimes|required|integer|min:0',
             'bathrooms' => 'sometimes|required|integer|min:0',
             'amenities' => 'nullable|string',

@@ -49,12 +49,12 @@ class MessageController extends Controller
         $propertyId = $propertyId == '0' ? null : $propertyId;
 
         $messages = Message::where(function ($query) use ($authId, $userId) {
-                $query->where('sender_id', $authId)
-                      ->where('receiver_id', $userId);
-            })
-            ->orWhere(function ($query) use ($authId, $userId) {
-                $query->where('sender_id', $userId)
-                      ->where('receiver_id', $authId);
+                // Correct grouping: (A→B OR B→A) AND property_id
+                $query->where(function ($q) use ($authId, $userId) {
+                    $q->where('sender_id', $authId)->where('receiver_id', $userId);
+                })->orWhere(function ($q) use ($authId, $userId) {
+                    $q->where('sender_id', $userId)->where('receiver_id', $authId);
+                });
             })
             ->when($propertyId, function ($query, $propertyId) {
                 return $query->where('property_id', $propertyId);

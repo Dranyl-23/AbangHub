@@ -115,23 +115,44 @@ export default function AddPropertyScreen() {
   };
 
   const handleAddProperty = async () => {
-    if (!title || !description || !monthlyRent || !city || !barangay || !address || !bedrooms || !bathrooms) {
+    if (!title.trim() || !description.trim() || !monthlyRent || !city || !barangay || !address) {
       Alert.alert('Error', 'Please fill in all required fields.');
+      return;
+    }
+
+    const rent = parseFloat(monthlyRent);
+    if (isNaN(rent) || rent <= 0) {
+      Alert.alert('Error', 'Monthly rent must be a valid amount greater than 0.');
+      return;
+    }
+    if (rent > 1000000) {
+      Alert.alert('Error', 'Monthly rent seems too high. Please double-check.');
+      return;
+    }
+
+    const beds = parseInt(bedrooms, 10);
+    const baths = parseInt(bathrooms, 10);
+    if (isNaN(beds) || beds < 0 || beds > 50) {
+      Alert.alert('Error', 'Please enter a valid number of bedrooms (0-50).');
+      return;
+    }
+    if (isNaN(baths) || baths < 0 || baths > 50) {
+      Alert.alert('Error', 'Please enter a valid number of bathrooms (0-50).');
       return;
     }
 
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append('title', title);
-      formData.append('description', description);
-      formData.append('monthly_rent', monthlyRent);
+      formData.append('title', title.trim());
+      formData.append('description', description.trim());
+      formData.append('monthly_rent', String(rent));
       formData.append('city', city);
       formData.append('barangay', barangay);
       formData.append('address', address);
       formData.append('property_type', propertyType);
-      formData.append('bedrooms', bedrooms);
-      formData.append('bathrooms', bathrooms);
+      formData.append('bedrooms', String(beds));
+      formData.append('bathrooms', String(baths));
       formData.append('amenities', JSON.stringify(amenities));
       if (location) {
         formData.append('latitude', String(location.latitude));
@@ -141,14 +162,14 @@ export default function AddPropertyScreen() {
       if (image) {
         const localUri = image;
         const filename = localUri.split('/').pop() || 'photo.jpg';
-        const match = /\.(\w+)$/.exec(filename);
+        const match = /\.([a-zA-Z0-9]+)$/.exec(filename);
         const type = match ? `image/${match[1]}` : `image`;
 
         formData.append('image', {
           uri: localUri,
           name: filename,
           type
-        } as any);
+        } as unknown as Blob);
       }
 
       await apiClient.post('/properties', formData, {
@@ -157,13 +178,14 @@ export default function AddPropertyScreen() {
 
       Alert.alert('Success', 'Property listed successfully!');
       router.back();
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to add property.';
-      Alert.alert('Error', message);
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      Alert.alert('Error', err.response?.data?.message || 'Failed to add property.');
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <SafeAreaView style={[styles.container, isDarkMode && styles.containerDark]} edges={['top']}>

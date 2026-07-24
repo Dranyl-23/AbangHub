@@ -76,7 +76,7 @@ class DashboardController extends Controller
                 return [
                     'id' => $lease->id,
                     'tenant_id' => $lease->tenant->id,
-                    'tenant_name' => $lease->tenant->first_name . ' ' . $lease->tenant->last_name,
+                    'tenant_name' => $lease->tenant?->full_name ?? 'N/A',
                     'property_id' => $lease->property->id,
                     'property_title' => $lease->property->title,
                     'end_date' => $lease->end_date->format('Y-m-d'),

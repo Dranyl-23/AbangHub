@@ -50,7 +50,7 @@
                             @foreach($propertyBreakdown as $pb)
                                 <div>
                                     <div class="flex justify-between text-sm mb-2">
-                                        <span class="font-medium text-slate-900 dark:text-white truncate pr-4">{{ $pb->property->title }}</span>
+                                        <span class="font-medium text-slate-900 dark:text-white truncate pr-4">{{ $pb->property?->title ?? 'Deleted Property' }}</span>
                                         <span class="font-bold text-emerald-600 dark:text-emerald-400 shrink-0">₱{{ number_format($pb->total, 0) }}</span>
                                     </div>
                                     @php

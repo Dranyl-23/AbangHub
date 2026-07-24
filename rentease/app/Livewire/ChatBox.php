@@ -94,7 +94,7 @@ class ChatBox extends Component
         Message::create([
             'sender_id' => Auth::id(),
             'receiver_id' => $this->activeUser->id,
-            'message' => $this->newMessage,
+            'content' => $this->newMessage,
             'is_read' => false
         ]);
 

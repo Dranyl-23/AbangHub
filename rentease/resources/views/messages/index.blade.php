@@ -25,6 +25,7 @@
                                 $otherUser = $isSender ? $conversation->receiver : $conversation->sender;
                                 $isUnread = !$isSender && !$conversation->is_read;
                             @endphp
+                            @if($otherUser)
                             <li>
                                 <a href="{{ route('messages.show', $otherUser->id) }}" class="flex items-center p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors {{ $isUnread ? 'bg-rose-50/50 dark:bg-rose-900/10' : '' }}">
                                     <div class="relative flex-shrink-0">
@@ -55,6 +56,7 @@
                                     </div>
                                 </a>
                             </li>
+                            @endif
                         @endforeach
                     </ul>
                 @endif

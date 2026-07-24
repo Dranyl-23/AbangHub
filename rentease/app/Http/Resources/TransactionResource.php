@@ -20,7 +20,7 @@ class TransactionResource extends JsonResource
             'type' => $this->type,
             'status' => $this->status,
             'reference_number' => $this->reference_number,
-            'description' => $this->description,
+            'notes' => $this->notes,
             'user' => new UserResource($this->whenLoaded('user')),
             'property' => new PropertyResource($this->whenLoaded('property')),
             'created_at' => $this->created_at?->toIso8601String(),

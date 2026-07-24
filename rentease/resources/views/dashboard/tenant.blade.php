@@ -362,7 +362,7 @@
                                                     {{ ucfirst($activity->type) }} {{ $activity->status }}
                                                 </p>
                                                 <p class="text-sm text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                                                    {{ $activity->property->title }}
+                                                    {{ $activity->property?->title ?? 'N/A' }}
                                                 </p>
                                             </div>
                                             

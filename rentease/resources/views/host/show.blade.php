@@ -66,7 +66,7 @@
                 <div class="lg:col-span-2">
                     
                     <div class="mb-12">
-                        <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-6">Hi, I'm {{ explode(' ', $user->full_name)[0] }}</h2>
+                        <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-6">Hi, I'm {{ explode(' ', trim($user->full_name ?? $user->username))[0] }}</h2>
                         <div class="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-400 text-lg leading-relaxed">
                             <p>Welcome to my profile! I take pride in providing clean, safe, and comfortable spaces for my tenants. Whether you're looking for a cozy room or a spacious apartment, I'm committed to ensuring you have a great stay.</p>
                         </div>

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Image, TouchableOpacity, SafeAreaView, Dimensions, Modal, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Image, TouchableOpacity, SafeAreaView, Dimensions, Modal, TextInput, Alert, Platform } from 'react-native';
 import { useLocalSearchParams, router, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import MapView, { Marker } from 'react-native-maps';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import apiClient from '../../src/api/client';
 import { Property } from '../../src/types';
 import { useTheme } from '../../src/context/ThemeContext';
@@ -44,10 +45,38 @@ export default function PropertyDetails() {
   
   // Application Modal States
   const [modalVisible, setModalVisible] = useState(false);
-  const [moveInDate, setMoveInDate] = useState('');
+  const [moveInDate, setMoveInDate] = useState<Date>(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)); // Default: 1 week from now
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [occupants, setOccupants] = useState('1');
+  const [occupantsError, setOccupantsError] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const formatDate = (date: Date) =>
+    date.toISOString().split('T')[0]; // → 'YYYY-MM-DD'
+
+  const handleDateChange = (_: DateTimePickerEvent, selected?: Date) => {
+    setShowDatePicker(Platform.OS === 'ios'); // Keep open on iOS
+    if (selected) setMoveInDate(selected);
+  };
+
+  const validateOccupants = (value: string): boolean => {
+    const num = parseInt(value, 10);
+    if (!value || isNaN(num)) {
+      setOccupantsError('Please enter a valid number');
+      return false;
+    }
+    if (num < 1) {
+      setOccupantsError('Minimum 1 occupant');
+      return false;
+    }
+    if (num > 20) {
+      setOccupantsError('Maximum 20 occupants');
+      return false;
+    }
+    setOccupantsError(null);
+    return true;
+  };
 
   useEffect(() => {
     fetchPropertyDetails();
@@ -67,23 +96,32 @@ export default function PropertyDetails() {
   };
 
   const handleApply = async () => {
-    if (!moveInDate || !occupants || !message) {
-      Alert.alert('Error', 'Please fill in all fields');
+    if (!message.trim()) {
+      Alert.alert('Error', 'Please write a message to the landlord');
       return;
     }
-    
+    if (!validateOccupants(occupants)) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (moveInDate <= today) {
+      Alert.alert('Error', 'Move-in date must be in the future');
+      return;
+    }
+
     setSubmitting(true);
     try {
       await apiClient.post(`/properties/${id}/apply`, {
-        move_in_date: moveInDate,
+        move_in_date: formatDate(moveInDate),
         occupants: parseInt(occupants, 10),
-        message: message,
+        message: message.trim(),
       });
       Alert.alert('Success', 'Application submitted successfully!');
       setModalVisible(false);
-      router.push('/applications' as any);
-    } catch (error: any) {
-      Alert.alert('Error', error.response?.data?.message || 'Failed to submit application');
+      router.push('/applications' as never);
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      Alert.alert('Error', err.response?.data?.message || 'Failed to submit application');
     } finally {
       setSubmitting(false);
     }
@@ -316,24 +354,43 @@ export default function PropertyDetails() {
               </TouchableOpacity>
             </View>
             
-            <Text style={[styles.inputLabel, isDarkMode && styles.inputLabelDark]}>Move-in Date (YYYY-MM-DD)</Text>
-            <TextInput 
-              style={[styles.input, isDarkMode && styles.inputDark]} 
-              placeholder="e.g. 2026-08-01" 
-              placeholderTextColor={isDarkMode ? "#64748b" : "#94a3b8"}
-              value={moveInDate}
-              onChangeText={setMoveInDate}
-            />
+            {/* Move-in Date Picker */}
+            <Text style={[styles.inputLabel, isDarkMode && styles.inputLabelDark]}>Move-in Date</Text>
+            <TouchableOpacity
+              style={[styles.input, isDarkMode && styles.inputDark, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text style={{ color: isDarkMode ? '#f8fafc' : '#0f172a', fontSize: 16 }}>
+                {formatDate(moveInDate)}
+              </Text>
+              <Ionicons name="calendar-outline" size={20} color="#e11d48" />
+            </TouchableOpacity>
+            {showDatePicker && (
+              <DateTimePicker
+                value={moveInDate}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                minimumDate={new Date(Date.now() + 24 * 60 * 60 * 1000)}
+                onChange={handleDateChange}
+              />
+            )}
 
+            {/* Occupants with Validation */}
             <Text style={[styles.inputLabel, isDarkMode && styles.inputLabelDark]}>Number of Occupants</Text>
             <TextInput 
-              style={[styles.input, isDarkMode && styles.inputDark]} 
+              style={[styles.input, isDarkMode && styles.inputDark, occupantsError ? { borderColor: '#e11d48' } : {}]} 
               placeholder="e.g. 2" 
               placeholderTextColor={isDarkMode ? "#64748b" : "#94a3b8"}
               keyboardType="numeric"
               value={occupants}
-              onChangeText={setOccupants}
+              onChangeText={(val) => {
+                setOccupants(val);
+                if (val) validateOccupants(val);
+              }}
             />
+            {occupantsError && (
+              <Text style={{ color: '#e11d48', fontSize: 12, marginTop: 4 }}>{occupantsError}</Text>
+            )}
 
             <Text style={[styles.inputLabel, isDarkMode && styles.inputLabelDark]}>Message to Landlord</Text>
             <TextInput 
