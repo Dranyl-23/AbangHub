@@ -107,7 +107,7 @@ export default function ProfileScreen() {
     return `${baseURL}${formattedPath}`;
   };
 
-  const avatarUrl = getAvatarUrl(user?.profile_image);
+  const avatarUrl = user?.avatar_url || getAvatarUrl(user?.profile_image);
   const isVerified = user?.is_verified;
 
   return (
