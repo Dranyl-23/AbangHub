@@ -23,5 +23,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('viewLogViewer', function ($user) {
             return $user->user_type === 'admin';
         });
+
+        // Force HTTPS in production (fixes Vercel mixed content / broken CSS)
+        if (config('app.env') !== 'local') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     }
 }
