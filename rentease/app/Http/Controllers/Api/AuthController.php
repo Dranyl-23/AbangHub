@@ -112,31 +112,33 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'google_id' => 'required|string',
-            'name' => 'required|string',
+            'google_id' => 'nullable|string',
+            'name' => 'nullable|string',
             'avatar' => 'nullable|string'
         ]);
 
-        // Find existing user by Google ID or Email
-        $user = User::where('google_id', $request->google_id)
-                    ->orWhere('email', $request->email)
-                    ->first();
+        // Find existing user by Email first, then by Google ID
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user && $request->google_id) {
+            $user = User::where('google_id', $request->google_id)->first();
+        }
 
         if ($user) {
-            // Update Google ID if it was only matched by email previously
-            if (!$user->google_id) {
+            // Update Google ID if it was missing
+            if ($request->google_id && !$user->google_id) {
                 $user->google_id = $request->google_id;
                 $user->save();
             }
         } else {
             // Register new user from Google
             $user = User::create([
-                'full_name' => $request->name,
-                'username' => 'google_' . substr($request->google_id, 0, 10) . '_' . time(),
+                'full_name' => $request->name ?? explode('@', $request->email)[0],
+                'username' => 'google_' . substr($request->google_id ?? md5($request->email), 0, 8) . '_' . time(),
                 'email' => $request->email,
                 'google_id' => $request->google_id,
                 'user_type' => 'tenant', // Default to tenant for mobile Google login
-                'password' => Hash::make(str()->random(24)), // Random secure password
+                'password' => null,
             ]);
         }
 
