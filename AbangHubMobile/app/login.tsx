@@ -20,6 +20,8 @@ export default function LoginScreen() {
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    redirectUri: 'https://auth.expo.io/@dranyl-23/AbangHubMobile',
   });
 
   const { login } = useAuth();
