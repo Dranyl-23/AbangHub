@@ -44,12 +44,21 @@ export default function LoginScreen() {
       });
       const userInfo = await userInfoResponse.json();
 
+      const userEmail = userInfo.email;
+      const googleId = userInfo.id || userInfo.sub;
+      const userName = userInfo.name || userEmail?.split('@')[0];
+
+      if (!userEmail) {
+        Alert.alert('Google Error', 'Could not retrieve email from Google.');
+        return;
+      }
+
       // 2. Send the Google User Info to our Laravel API
       const apiResponse = await apiClient.post('/auth/google', {
-        email: userInfo.email,
-        google_id: userInfo.id,
-        name: userInfo.name,
-        avatar: userInfo.picture
+        email: userEmail,
+        google_id: googleId || null,
+        name: userName || null,
+        avatar: userInfo.picture || null
       });
 
       const { token, user } = apiResponse.data;
@@ -58,9 +67,10 @@ export default function LoginScreen() {
       await login(token, user);
       
       Alert.alert('Success', 'Logged in via Google!');
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      Alert.alert('Error', 'Google login failed.');
+      const msg = error.response?.data?.message || 'Google login failed.';
+      Alert.alert('Error', msg);
     } finally {
       setLoading(false);
     }
