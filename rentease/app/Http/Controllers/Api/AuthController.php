@@ -16,12 +16,21 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
+        $loginInput = $request->input('login') ?? $request->input('email');
+
+        if (!$loginInput) {
+            return response()->json([
+                'message' => 'The email or login field is required.'
+            ], 422);
+        }
+
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'password' => 'required|string',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $field = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $user = User::where($field, $loginInput)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([

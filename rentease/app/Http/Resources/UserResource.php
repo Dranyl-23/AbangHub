@@ -25,6 +25,7 @@ class UserResource extends JsonResource
             'emergency_contact_name' => $this->emergency_contact_name,
             'emergency_contact_phone' => $this->emergency_contact_phone,
             'profile_image' => $this->profile_image,
+            'avatar_url' => $this->avatar_url,
             'is_verified' => (bool) $this->is_verified,
             'is_banned' => (bool) $this->is_banned,
             'created_at' => $this->created_at?->toIso8601String(),
