@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -28,32 +27,34 @@ class GoogleController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
             
-            // Check if user already exists
+            // Check if user already exists by email
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if ($user) {
-                // Update google_id if it's missing
-                if (!$user->google_id) {
-                    $user->update(['google_id' => $googleUser->getId()]);
-                }
+                // Update google_id and mark email as verified if missing
+                $user->update([
+                    'google_id'         => $user->google_id ?? $googleUser->getId(),
+                    'email_verified_at' => $user->email_verified_at ?? now(),
+                ]);
                 
-                Auth::login($user);
-                return redirect()->route('dashboard');
+                Auth::login($user, true);
+                return redirect()->intended('/dashboard');
             } else {
                 // Get the role they selected on the register page, if any
                 $role = session('google_role');
                 
-                // Create a new user
+                // Create a new user with verified email
                 $user = User::create([
-                    'full_name' => $googleUser->getName(),
-                    'email' => $googleUser->getEmail(),
-                    'username' => $this->generateUniqueUsername($googleUser->getName()),
-                    'google_id' => $googleUser->getId(),
-                    'user_type' => $role ?? 'tenant', // Default to tenant if no role
-                    'password' => null,
+                    'full_name'         => $googleUser->getName(),
+                    'email'             => $googleUser->getEmail(),
+                    'username'          => $this->generateUniqueUsername($googleUser->getName()),
+                    'google_id'         => $googleUser->getId(),
+                    'user_type'         => $role ?? 'tenant', // Default to tenant if no role
+                    'password'          => null,
+                    'email_verified_at' => now(), // Google emails are pre-verified
                 ]);
 
-                Auth::login($user);
+                Auth::login($user, true);
                 session()->forget('google_role');
                 
                 // If they didn't come from the register page (no role selected), show onboarding
@@ -62,10 +63,11 @@ class GoogleController extends Controller
                     return redirect()->route('onboarding');
                 }
                 
-                return redirect()->route('dashboard');
+                return redirect()->intended('/dashboard');
             }
             
         } catch (\Exception $e) {
+            \Log::error('Google Auth Web Error: ' . $e->getMessage());
             return redirect()->route('login')->with('error', 'Failed to authenticate with Google.');
         }
     }
