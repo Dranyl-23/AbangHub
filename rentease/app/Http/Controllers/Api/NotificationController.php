@@ -13,8 +13,9 @@ class NotificationController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        
-        $notifications = $user->notifications()->get();
+
+        // HIGH-6 FIX: Paginate instead of loading all notifications into memory
+        $notifications = $user->notifications()->latest()->paginate(20);
 
         return response()->json([
             'data' => $notifications

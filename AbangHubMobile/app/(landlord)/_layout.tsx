@@ -1,12 +1,35 @@
-import { Tabs } from 'expo-router';
+import { Tabs, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../src/context/ThemeContext';
 import React from 'react';
 import { useUnreadMessages } from '../../src/hooks/useUnreadMessages';
+import { useAuth } from '../../src/context/AuthContext';
+import { ActivityIndicator, View } from 'react-native';
 
 export default function LandlordLayout() {
   const { isDarkMode } = useTheme();
   const unreadCount = useUnreadMessages();
+  const { user, loading } = useAuth();
+
+  // HIGH-9 FIX: Show loading state while auth resolves
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#e11d48" />
+      </View>
+    );
+  }
+
+  // HIGH-9 FIX: Redirect unauthenticated users to login
+  if (!user) {
+    return <Redirect href="/login" />;
+  }
+
+  // HIGH-9 FIX: Redirect tenants away from landlord screens.
+  // Prevents a tenant from manually navigating to /(landlord)/dashboard.
+  if (user.user_type !== 'landlord') {
+    return <Redirect href="/(tenant)/explore" />;
+  }
 
   return (
     <Tabs

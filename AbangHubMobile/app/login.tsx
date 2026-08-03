@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, Image } from 'react-native';
 import { router } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
 import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
+import { makeRedirectUri } from 'expo-auth-session';
 import { Ionicons } from '@expo/vector-icons';
 import apiClient from '../src/api/client';
 import { useAuth } from '../src/context/AuthContext';
+import { supabase } from '../src/lib/supabase';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -16,60 +16,78 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  // Google Auth Setup
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-    redirectUri: 'https://auth.expo.io/@dranyl-23/AbangHubMobile',
-  });
-
   const { login } = useAuth();
 
-  useEffect(() => {
-    if (response?.type === 'success') {
-      const { authentication } = response;
-      if (authentication) {
-        handleGoogleLogin(authentication.accessToken);
-      }
-    }
-  }, [response]);
-
-  const handleGoogleLogin = async (accessToken: string) => {
+  /**
+   * Supabase Google OAuth flow:
+   * 1. Ask Supabase for the Google OAuth URL
+   * 2. Open it in an in-app browser (WebBrowser)
+   * 3. Supabase redirects back to our app with a session in the URL
+   * 4. Extract the Supabase access_token from the session
+   * 5. Send it to our Laravel backend to get a Sanctum token
+   */
+  const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      // 1. Fetch user profile from Google using the Access Token
-      const userInfoResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-        headers: { Authorization: `Bearer ${accessToken}` },
+      // Build the deep-link redirect URI that Supabase will redirect back to.
+      // In Expo Go: exp://... | In standalone: abanghubmobile://...
+      const redirectUrl = makeRedirectUri({
+        scheme: 'abanghubmobile',
+        path: 'auth/callback',
       });
-      const userInfo = await userInfoResponse.json();
 
-      const userEmail = userInfo.email;
-      const googleId = userInfo.id || userInfo.sub;
-      const userName = userInfo.name || userEmail?.split('@')[0];
+      // Step 1: Get the Supabase-generated Google OAuth URL
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUrl,
+          skipBrowserRedirect: true, // We control the browser ourselves
+        },
+      });
 
-      if (!userEmail) {
-        Alert.alert('Google Error', 'Could not retrieve email from Google.');
+      if (error || !data?.url) {
+        throw new Error(error?.message ?? 'Failed to start Google login.');
+      }
+
+      // Step 2: Open Google login in the in-app browser
+      const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
+
+      if (result.type !== 'success') {
+        // User cancelled or browser closed — not an error
         return;
       }
 
-      // 2. Send the Google User Info to our Laravel API
-      const apiResponse = await apiClient.post('/auth/google', {
-        email: userEmail,
-        google_id: googleId || null,
-        name: userName || null,
-        avatar: userInfo.picture || null
+      // Step 3: Extract access_token and refresh_token from redirect URL hash/query
+      const urlParts = result.url.split('#')[1] || result.url.split('?')[1] || '';
+      const urlParams = new URLSearchParams(urlParts);
+      const supabaseAccessToken = urlParams.get('access_token');
+      const refreshToken = urlParams.get('refresh_token');
+
+      if (!supabaseAccessToken) {
+        throw new Error('Could not retrieve access token from Google session.');
+      }
+
+      if (refreshToken) {
+        await supabase.auth.setSession({
+          access_token: supabaseAccessToken,
+          refresh_token: refreshToken,
+        });
+      }
+
+      // Step 4: Send the verified Supabase token to our Laravel backend.
+      // Laravel will call the Supabase /auth/v1/user endpoint to verify it,
+      // then find/create the local user and return a Sanctum token.
+      const apiResponse = await apiClient.post('/auth/supabase', {
+        supabase_token: supabaseAccessToken,
       });
 
       const { token, user } = apiResponse.data;
-      
-      // 3. Save token securely and redirect via AuthContext
       await login(token, user);
-      
+
       Alert.alert('Success', 'Logged in via Google!');
     } catch (error: any) {
-      console.error(error);
-      const msg = error.response?.data?.message || 'Google login failed.';
+      console.error('Google login error:', error);
+      const msg = error.response?.data?.message ?? error.message ?? 'Google login failed.';
       Alert.alert('Error', msg);
     } finally {
       setLoading(false);
@@ -152,15 +170,15 @@ export default function LoginScreen() {
         <View style={styles.divider} />
       </View>
 
-      {/* Google Login Button */}
-      <TouchableOpacity 
-        style={styles.googleButton} 
-        onPress={() => promptAsync()}
-        disabled={!request || loading}
+      {/* Google Login Button — powered by Supabase OAuth */}
+      <TouchableOpacity
+        style={styles.googleButton}
+        onPress={handleGoogleLogin}
+        disabled={loading}
       >
-        <Image 
-          source={require('../assets/images/google.png')} 
-          style={styles.googleIcon} 
+        <Image
+          source={require('../assets/images/google.png')}
+          style={styles.googleIcon}
         />
         <Text style={styles.googleButtonText}>Continue with Google</Text>
       </TouchableOpacity>

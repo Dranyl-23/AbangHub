@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
@@ -16,17 +18,19 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
-            'full_name' => 'nullable|string|max:100',
-            'phone' => 'nullable|string|max:20',
-            'emergency_contact_name' => 'nullable|string|max:100',
-            'emergency_contact_phone' => 'nullable|string|max:20',
+            'full_name'                  => 'nullable|string|max:100',
+            'phone'                      => 'nullable|string|max:20',
+            'emergency_contact_name'     => 'nullable|string|max:100',
+            'emergency_contact_phone'    => 'nullable|string|max:20',
         ]);
 
         $user->update($validated);
 
+        // CRIT-6 FIX: Return UserResource instead of raw Eloquent model
+        // to ensure consistent, intentional data exposure across all API responses.
         return response()->json([
             'message' => 'Profile updated successfully',
-            'user' => $user
+            'user'    => new UserResource($user->fresh()),
         ]);
     }
 
@@ -42,8 +46,8 @@ class ProfileController extends Controller
         $user = $request->user();
 
         if ($request->hasFile('avatar')) {
-            // Delete old avatar if exists
-            if ($user->profile_image) {
+            // Delete old avatar if it exists in local storage
+            if ($user->profile_image && !str_starts_with($user->profile_image, 'http')) {
                 $oldPath = str_replace('/storage/', '', $user->profile_image);
                 Storage::delete($oldPath);
             }
@@ -52,9 +56,10 @@ class ProfileController extends Controller
             $user->profile_image = $path;
             $user->save();
 
+            // CRIT-6 FIX: Return UserResource instead of raw Eloquent model
             return response()->json([
                 'message' => 'Avatar updated successfully',
-                'user' => $user
+                'user'    => new UserResource($user->fresh()),
             ]);
         }
 
@@ -73,22 +78,23 @@ class ProfileController extends Controller
         $user = $request->user();
 
         if ($request->hasFile('id_picture')) {
-            // Delete old ID if exists
-            if ($user->id_picture) {
+            // Delete old ID if it exists in local storage
+            if ($user->id_picture && !str_starts_with($user->id_picture, 'http')) {
                 $oldPath = str_replace('/storage/', '', $user->id_picture);
                 Storage::delete($oldPath);
             }
 
             $path = $request->file('id_picture')->store('identifications');
-            $user->id_picture = $path;
-            
-            // Mark as unverified if they upload a new ID, so admin can re-verify
+            $user->id_picture  = $path;
+
+            // Mark as unverified so admin can re-verify the new ID
             $user->is_verified = false;
             $user->save();
 
+            // CRIT-6 FIX: Return UserResource instead of raw Eloquent model
             return response()->json([
                 'message' => 'ID uploaded successfully. Pending verification.',
-                'user' => $user
+                'user'    => new UserResource($user->fresh()),
             ]);
         }
 
@@ -102,18 +108,18 @@ class ProfileController extends Controller
     {
         $request->validate([
             'current_password' => 'required|string',
-            'new_password' => 'required|string|min:8|confirmed',
+            'new_password'     => 'required|string|min:8|confirmed',
         ]);
 
         $user = $request->user();
 
-        if (!\Illuminate\Support\Facades\Hash::check($request->current_password, $user->password)) {
+        if (!Hash::check($request->current_password, $user->password)) {
             return response()->json([
                 'message' => 'The provided current password does not match your actual password.'
             ], 400);
         }
 
-        $user->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
+        $user->password = Hash::make($request->new_password);
         $user->save();
 
         return response()->json([

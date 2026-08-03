@@ -37,7 +37,12 @@ class DashboardController extends Controller
         $endOfMonth = Carbon::now()->endOfMonth();
         
         $totalIncome = Invoice::where('status', 'paid')
-            ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
+            ->where(function ($q) use ($startOfMonth, $endOfMonth) {
+                $q->whereBetween('paid_at', [$startOfMonth, $endOfMonth])
+                  ->orWhere(function ($q2) use ($startOfMonth, $endOfMonth) {
+                      $q2->whereNull('paid_at')->whereBetween('updated_at', [$startOfMonth, $endOfMonth]);
+                  });
+            })
             ->whereHas('lease.property', function ($query) use ($ownerId) {
                 $query->where('owner_id', $ownerId);
             })

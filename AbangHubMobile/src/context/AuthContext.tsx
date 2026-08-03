@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { router } from 'expo-router';
+import apiClient from '../api/client';
 
 // Proper User type — no more 'any'!
 export interface User {
@@ -41,9 +42,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loadUser = async () => {
     try {
+      const token = await SecureStore.getItemAsync('userToken');
       const userDataStr = await SecureStore.getItemAsync('userData');
+
       if (userDataStr) {
         setUser(JSON.parse(userDataStr) as User);
+      }
+
+      if (token) {
+        // Re-validate token with backend to ensure session is active and user is not banned
+        try {
+          const res = await apiClient.get('/user');
+          if (res.data) {
+            setUser(res.data);
+            await SecureStore.setItemAsync('userData', JSON.stringify(res.data));
+          }
+        } catch (apiErr: any) {
+          // If token is invalid or user is banned (401/403), clear local session
+          if (apiErr.response?.status === 401 || apiErr.response?.status === 403) {
+            await logout();
+          }
+        }
       }
     } catch (error) {
       console.error('Error loading user data', error);

@@ -8,26 +8,55 @@ use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
 {
+    /**
+     * Get all expenses for the authenticated landlord.
+     *
+     * HIGH-2 FIX: Guard both index() and store() to landlords only.
+     * Without this check, tenants could view and log expenses — a landlord-only feature.
+     */
     public function index(Request $request)
     {
-        $expenses = Expense::where('owner_id', $request->user()->id)
+        $user = $request->user();
+
+        // HIGH-2 FIX: Tenants have no expenses to view.
+        if ($user->user_type !== 'landlord') {
+            return response()->json(['message' => 'Only landlords can view expenses.'], 403);
+        }
+
+        $expenses = Expense::where('owner_id', $user->id)
             ->orderBy('date', 'desc')
-            ->get();
+            ->paginate(20); // HIGH-6 FIX: Paginate instead of unbounded ->get()
+
         return response()->json(['data' => $expenses]);
     }
 
+    /**
+     * Log a new expense for the authenticated landlord.
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'amount' => 'required|numeric|min:0',
-            'category' => 'required|string',
-            'date' => 'required|date',
-            'description' => 'nullable|string',
-            'receipt_image' => 'nullable|image|max:5120'
+        $user = $request->user();
+
+        // HIGH-2 FIX: Only landlords can log expenses.
+        if ($user->user_type !== 'landlord') {
+            return response()->json(['message' => 'Only landlords can log expenses.'], 403);
+        }
+
+        $validated = $request->validate([
+            'amount'        => 'required|numeric|min:0',
+            'category'      => 'required|string|max:100',
+            'date'          => 'required|date',
+            'description'   => 'nullable|string|max:500',
+            'receipt_image' => 'nullable|image|max:5120',
         ]);
 
-        $data = $request->only(['amount', 'category', 'date', 'description']);
-        $data['owner_id'] = $request->user()->id;
+        $data = [
+            'amount'      => $validated['amount'],
+            'category'    => $validated['category'],
+            'date'        => $validated['date'],
+            'description' => $validated['description'] ?? null,
+            'owner_id'    => $user->id,
+        ];
 
         if ($request->hasFile('receipt_image')) {
             $data['receipt_image_path'] = $request->file('receipt_image')->store('expenses/receipts');
@@ -37,7 +66,7 @@ class ExpenseController extends Controller
 
         return response()->json([
             'message' => 'Expense logged successfully.',
-            'data' => $expense
+            'data'    => $expense,
         ], 201);
     }
 }

@@ -36,9 +36,16 @@ return [
     ],
 
     'google' => [
-        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_id'     => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect' => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
+        'redirect'      => env('GOOGLE_REDIRECT_URI', '/auth/google/callback'),
+    ],
+
+    // Supabase — used to verify mobile Google OAuth tokens
+    'supabase' => [
+        'url'         => env('SUPABASE_URL'),
+        'anon_key'    => env('SUPABASE_ANON_KEY'),
+        'service_key' => env('SUPABASE_SERVICE_KEY'), // Server-side only, never expose to clients
     ],
 
 ];

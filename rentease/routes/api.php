@@ -4,13 +4,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 
-// Public Routes
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/auth/google', [AuthController::class, 'googleAuth']);
+// Public Routes — Rate limited to prevent brute-force & spam
+// Supabase handles Google OAuth — we only verify the resulting token here
+Route::middleware('throttle:10,1')->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/auth/supabase', [AuthController::class, 'supabaseAuth']); // Google via Supabase
+});
+Route::middleware('throttle:5,1')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+});
 
-// Protected Routes (Requires Sanctum Token)
-Route::middleware('auth:sanctum')->group(function () {
+// Protected Routes (Requires Sanctum Token & Active Unbanned Status)
+Route::middleware(['auth:sanctum', 'ensure_not_banned'])->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
     

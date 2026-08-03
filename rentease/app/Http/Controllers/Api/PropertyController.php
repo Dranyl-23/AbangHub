@@ -58,6 +58,14 @@ class PropertyController extends Controller
      */
     public function store(Request $request)
     {
+        // HIGH-1 FIX: Only landlords can create property listings.
+        // Without this check, any authenticated tenant could POST /api/properties.
+        if ($request->user()->user_type !== 'landlord') {
+            return response()->json([
+                'message' => 'Only landlords can create property listings.'
+            ], 403);
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -65,7 +73,7 @@ class PropertyController extends Controller
             'city' => 'required|string|max:255',
             'barangay' => 'required|string|max:255',
             'address' => 'required|string',
-            'property_type' => 'required|string|in:apartment,house,condo,room,boarding_house',
+            'property_type' => 'required|string|in:apartment,house,condo,room,boarding_house,studio',
             'bedrooms' => 'required|integer|min:0',
             'bathrooms' => 'required|integer|min:0',
             'amenities' => 'nullable|string', // Will be parsed as JSON array
@@ -148,7 +156,12 @@ class PropertyController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
-        $property->update($request->except(['image', 'amenities']));
+        // CRIT-3 FIX: Use only validated data — never raw $request fields — to prevent mass assignment.
+        // Fields like owner_id and is_banned are not in $validated and cannot be tampered with.
+        $property->update(array_intersect_key($validated, array_flip([
+            'title', 'description', 'monthly_rent', 'city', 'barangay',
+            'address', 'property_type', 'bedrooms', 'bathrooms', 'latitude', 'longitude',
+        ])));
 
         if ($request->has('amenities')) {
             $property->amenities()->delete(); // clear old
