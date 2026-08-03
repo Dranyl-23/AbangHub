@@ -6,11 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
-
 class Application extends Model
 {
-    use SoftDeletes;
     protected $fillable = ['user_id', 'property_id', 'message', 'move_in_date', 'status', 'occupants'];
 
     protected $casts = [
