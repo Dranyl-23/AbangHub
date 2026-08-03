@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
+
 class Property extends Model
 {
     use HasFactory;
@@ -26,7 +28,7 @@ class Property extends Model
             if (app()->runningInConsole()) return;
 
             // Only apply if user is not admin, or if not logged in
-            if (!auth()->check() || auth()->user()->user_type !== 'admin') {
+            if (!Auth::check() || Auth::user()?->user_type !== 'admin') {
                 $builder->where('is_banned', false);
             }
         });
