@@ -16,19 +16,27 @@ class GoogleController extends Controller
         if ($request->has('role')) {
             session(['google_role' => $request->role]);
         }
-        
+
         /** @var \Laravel\Socialite\Two\GoogleProvider $driver */
         $driver = Socialite::driver('google');
-        return $driver->with(['prompt' => 'select_account'])->redirect();
+
+        // Use stateless() to work reliably on Vercel serverless environments
+        return $driver->stateless()->with(['prompt' => 'select_account'])->redirect();
     }
 
     public function callback()
     {
         try {
-            $googleUser = Socialite::driver('google')->user();
-            
-            // Check if user already exists by email
-            $user = User::where('email', $googleUser->getEmail())->first();
+            // Use stateless() to prevent InvalidStateException on serverless platforms
+            $googleUser = Socialite::driver('google')->stateless()->user();
+
+            if (!$googleUser || !$googleUser->getEmail()) {
+                return redirect()->route('login')->with('error', 'Could not retrieve email from Google.');
+            }
+
+            // Check if user already exists by email or google_id
+            $user = User::where('email', $googleUser->getEmail())->first()
+                ?? User::where('google_id', $googleUser->getId())->first();
 
             if ($user) {
                 // Update google_id and mark email as verified if missing
@@ -36,18 +44,18 @@ class GoogleController extends Controller
                     'google_id'         => $user->google_id ?? $googleUser->getId(),
                     'email_verified_at' => $user->email_verified_at ?? now(),
                 ]);
-                
+
                 Auth::login($user, true);
                 return redirect()->intended('/dashboard');
             } else {
                 // Get the role they selected on the register page, if any
                 $role = session('google_role');
-                
+
                 // Create a new user with verified email
                 $user = User::create([
-                    'full_name'         => $googleUser->getName(),
+                    'full_name'         => $googleUser->getName() ?? explode('@', $googleUser->getEmail())[0],
                     'email'             => $googleUser->getEmail(),
-                    'username'          => $this->generateUniqueUsername($googleUser->getName()),
+                    'username'          => $this->generateUniqueUsername($googleUser->getName() ?? 'user'),
                     'google_id'         => $googleUser->getId(),
                     'user_type'         => $role ?? 'tenant', // Default to tenant if no role
                     'password'          => null,
@@ -56,19 +64,19 @@ class GoogleController extends Controller
 
                 Auth::login($user, true);
                 session()->forget('google_role');
-                
+
                 // If they didn't come from the register page (no role selected), show onboarding
                 if (!$role) {
                     session(['needs_onboarding' => true]);
                     return redirect()->route('onboarding');
                 }
-                
+
                 return redirect()->intended('/dashboard');
             }
-            
+
         } catch (\Exception $e) {
             \Log::error('Google Auth Web Error: ' . $e->getMessage());
-            return redirect()->route('login')->with('error', 'Failed to authenticate with Google.');
+            return redirect()->route('login')->with('error', 'Google login error: ' . $e->getMessage());
         }
     }
 
@@ -78,15 +86,15 @@ class GoogleController extends Controller
         if (empty($base)) {
             $base = 'user';
         }
-        
+
         $username = $base;
         $counter = 1;
-        
+
         while (User::where('username', $username)->exists()) {
             $username = $base . $counter;
             $counter++;
         }
-        
+
         return $username;
     }
 }
